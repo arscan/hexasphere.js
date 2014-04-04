@@ -50,8 +50,6 @@ Point.prototype.project = function(radius, percent){
     console.log(Math.sqrt(Math.pow(newx,2) + Math.pow(newy,2) + Math.pow(newz,2)));
    */
 
-    console.log(this.x);
-
     return this;
 
 };

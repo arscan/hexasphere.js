@@ -7,6 +7,8 @@ $(function(){
 
     var cameraDistance = 60;
     var scene = new THREE.Scene();
+    scene.fog = new THREE.Fog( 0x000000, cameraDistance, cameraDistance * 1.2);
+
 
     var lineMaterial = new THREE.LineBasicMaterial({
         // color: opts.lineColor,
@@ -24,8 +26,6 @@ $(function(){
         geometry.vertices.push(vertex);
         c++;
     }
-    console.log(c);
-
     for(var i = 0; i< faces.length; i++){
         var vertex1 = new THREE.Vector3(faces[i].point1.x, faces[i].point1.y, faces[i].point1.z);
         var vertex2 = new THREE.Vector3(faces[i].point2.x, faces[i].point2.y, faces[i].point2.z);
@@ -47,10 +47,6 @@ $(function(){
         var line = new THREE.Line(lineGeometry, lineMaterial);
         scene.add(line);
     }
-
-    console.log(i);
-
-
 
 
     var material = new THREE.ParticleSystemMaterial({size: 1});
@@ -76,7 +72,7 @@ $(function(){
 
         var dt = Date.now() - lastTime;
 
-        var rotateCameraBy = (2 * Math.PI)/(10000/dt);
+        var rotateCameraBy = (2 * Math.PI)/(100000/dt);
         cameraAngle += rotateCameraBy;
 
         lastTime = Date.now();

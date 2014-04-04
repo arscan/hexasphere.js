@@ -11,6 +11,7 @@ module.exports = function(grunt) {
                 src: [
                     'src/point.js',
                     'src/face.js',
+                    'src/tile.js',
                     'src/hexasphere.js'
                     // 'src/*.js',
                 ],

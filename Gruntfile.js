@@ -9,7 +9,10 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: [
-                    'src/*.js',
+                    'src/point.js',
+                    'src/face.js',
+                    'src/hexasphere.js'
+                    // 'src/*.js',
                 ],
                 dest: 'build/<%= pkg.name %>'
             }

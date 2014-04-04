@@ -4,6 +4,8 @@ var Point = function(x,y,z){
         this.y = y;
         this.z = z;
     }
+
+    this.faces = [];
 }
 
 Point.prototype.midpoint = function(point){
@@ -54,6 +56,10 @@ Point.prototype.project = function(radius, percent){
 
 };
 
+Point.prototype.registerFace = function(face){
+    this.faces.push(face);
+}
+
 Point.prototype.toString = function(){
     return "" + this.x + "," + this.y + "," + this.z;
 
@@ -68,7 +74,11 @@ var Face = function(point1, point2, point3){
     this.point3 = point3; // bot right
 };
 
-Face.prototype.subdivide = function(checkPoint){
+Face.prototype.subdivide = function(last, checkPoint){
+
+    if(typeof last != "boolean"){
+        last = false;
+    }
 
     if(typeof checkPoint != "function"){
         checkPoint = function(p){return p};
@@ -78,11 +88,35 @@ Face.prototype.subdivide = function(checkPoint){
     var np1 = checkPoint(this.point1.midpoint(this.point2));
     var np2 = checkPoint(this.point1.midpoint(this.point3));
     var np3 = checkPoint(this.point3.midpoint(this.point2));
+    
+    var nf1 = new Face(this.point1, np1, np2);
+    var nf2 = new Face(np1, this.point2, np3);
+    var nf3 = new Face(np1, np2, np3);
+    var nf4 = new Face(np2, np3, this.point3);
 
-    nf.push(new Face(this.point1, np1, np2));
-    nf.push(new Face(np1, this.point2, np3));
-    nf.push(new Face(np1, np2, np3));
-    nf.push(new Face(np2, np3, this.point3));
+    // the last time we are subdividing, register all the faces
+    // with the point so we can figure out neighbors and 
+    // build my hexes
+    if(last){
+        np1.registerFace(nf1);
+        np1.registerFace(nf2);
+        np1.registerFace(nf3);
+        np2.registerFace(nf1);
+        np2.registerFace(nf3);
+        np2.registerFace(nf4);
+        np3.registerFace(nf2);
+        np3.registerFace(nf3);
+        np3.registerFace(nf4);
+        this.point1.registerFace(nf1);
+        this.point2.registerFace(nf2);
+        this.point3.registerFace(nf4);
+
+    }
+
+    nf.push(nf1);
+    nf.push(nf2);
+    nf.push(nf3);
+    nf.push(nf4);
 
     return nf;
 
@@ -141,7 +175,7 @@ var Hexsphere = function(radius, numDivisions){
         numDivisions --;
         var facesNew = [];
         for(var i = 0; i< this.faces.length; i++){
-            var nf = this.faces[i].subdivide(function(point){
+            var nf = this.faces[i].subdivide(i == 0, function(point){
                 if(_this.points[point]){
                     console.log("already got that point!");
                     return _this.points[point];

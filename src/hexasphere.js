@@ -50,7 +50,7 @@ var Hexsphere = function(radius, numDivisions){
         numDivisions --;
         var facesNew = [];
         for(var i = 0; i< this.faces.length; i++){
-            var nf = this.faces[i].subdivide(function(point){
+            var nf = this.faces[i].subdivide(i == 0, function(point){
                 if(_this.points[point]){
                     console.log("already got that point!");
                     return _this.points[point];

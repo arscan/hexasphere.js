@@ -62,7 +62,7 @@ $(function(){
 
     var camera = new THREE.PerspectiveCamera( 50, 600 / 500, 1, 200);
     camera.position.z = -cameraDistance;
-    scene.add(particles); 
+    // scene.add(particles); 
 
 
 

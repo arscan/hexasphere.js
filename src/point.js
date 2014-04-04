@@ -4,6 +4,8 @@ var Point = function(x,y,z){
         this.y = y;
         this.z = z;
     }
+
+    this.faces = [];
 }
 
 Point.prototype.midpoint = function(point){
@@ -53,6 +55,10 @@ Point.prototype.project = function(radius, percent){
     return this;
 
 };
+
+Point.prototype.registerFace = function(face){
+    this.faces.push(face);
+}
 
 Point.prototype.toString = function(){
     return "" + this.x + "," + this.y + "," + this.z;

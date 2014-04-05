@@ -17,15 +17,21 @@ $(function(){
 
 
     var geometry = new THREE.Geometry();
+    geometry.dynamic = true;
     var faces = hexsphere.faces;
+    var geometryIndex = 0;
 
-
-    var c = 0;
-    for(var p in hexsphere.points){
-        var vertex = hexsphere.points[p];
-        geometry.vertices.push(vertex);
-        c++;
+    var vp = [];
+    for(var i = 0; i< 1000; i++){
+        geometry.vertices.push(new THREE.Vector3(0,0,-500));
     }
+
+    // var c = 0;
+    // for(var p in hexsphere.points){
+    //     var vertex = hexsphere.points[p];
+    //     geometry.vertices.push(vertex);
+    //     c++;
+    // }
     for(var i = 0; i< faces.length; i++){
         var vertex1 = new THREE.Vector3(faces[i].point1.x, faces[i].point1.y, faces[i].point1.z);
         var vertex2 = new THREE.Vector3(faces[i].point2.x, faces[i].point2.y, faces[i].point2.z);
@@ -48,6 +54,22 @@ $(function(){
         scene.add(line);
     }
 
+    // for(var i = 0; i < hexsphere.tiles.length; i++){
+    //     var t = hexsphere.tiles[i];
+    //     geometry.vertices.push(new THREE.Vector3(t.centerPoint.x, t.centerPoint.y, t.centerPoint.z));
+
+
+    //     geometryIndex++;
+    // }
+
+    setInterval(function(){
+        if(geometryIndex < hexsphere.tiles.length){
+            var t = hexsphere.tiles[geometryIndex];
+            geometry.vertices[geometryIndex].set(t.centerPoint.x, t.centerPoint.y, t.centerPoint.z);
+            geometry.verticesNeedUpdate = true;
+        }
+        geometryIndex++;
+    }, 50);
 
     var material = new THREE.ParticleSystemMaterial({size: 1});
     var particles = new THREE.ParticleSystem(geometry, material);
@@ -58,7 +80,7 @@ $(function(){
 
     var camera = new THREE.PerspectiveCamera( 50, 600 / 500, 1, 200);
     camera.position.z = -cameraDistance;
-    // scene.add(particles); 
+    scene.add(particles); 
 
 
 
@@ -90,6 +112,8 @@ $(function(){
     }
 
     requestAnimationFrame(tick);
+
+    window.hexsphere = hexsphere;
 
 
 

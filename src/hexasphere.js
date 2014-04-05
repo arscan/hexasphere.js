@@ -50,7 +50,7 @@ var Hexsphere = function(radius, numDivisions){
         numDivisions --;
         var facesNew = [];
         for(var i = 0; i< this.faces.length; i++){
-            var nf = this.faces[i].subdivide(i == 0, function(point){
+            var nf = this.faces[i].subdivide(numDivisions == 0, function(point){
                 if(_this.points[point]){
                     return _this.points[point];
                 } else {
@@ -69,6 +69,62 @@ var Hexsphere = function(radius, numDivisions){
     var newPoints = {};
 
 
+    this.tiles = [];
+    var finishedPoints ={};
+    var edgePoints ={};
+
+    for(var c = 0; c< corners.length; c++){
+        this.tiles.push(new Tile(corners[c]));
+        finishedPoints[corners[c]] = true;
+    }
+
+    var tileNum = 0;
+
+
+    while(tileNum < this.tiles.length){
+        for(var f = 0; f< this.tiles[tileNum].faces.length; f++){
+            var face = this.tiles[tileNum].faces[f];
+
+            var firstPoint = null;
+                var count = 0;
+            for(var p = 0; p < face.points.length; p++){
+                if(face.points[p].toString() != this.tiles[tileNum].centerPoint.toString()){
+                    count++;
+                    console.log(count);
+                    if(firstPoint == null){
+                        firstPoint = face.points[p];
+                    } else {
+                        var newFace = firstPoint.findCommonFace(face.points[p], face);
+                        var newCenter = newFace.findThirdPoint(face.points[p], firstPoint);
+                        var allok = true; // I shouldn't have to do this...
+                        if(!finishedPoints[newCenter.toString()] && !edgePoints[newCenter.toString()]){
+                            for(var x = 0; x < newCenter.faces.length; x++){
+                                for(var xy = 0; xy < newCenter.faces[x].points.length; xy++){
+                                    if(finishedPoints[newCenter.faces[x].points[xy]]){
+                                        allok = false;
+                                    }
+
+                                }
+
+                            }
+                            if(allok){
+                                finishedPoints[newCenter.toString()] = true;
+                                this.tiles.push(new Tile(newCenter));
+                            }
+                        }
+                        
+                    }
+                    edgePoints[firstPoint.toString()] = true;
+                    edgePoints[face.points[p].toString()] = true;
+                }
+            }
+            
+        }
+
+        tileNum++;
+
+    }
+
     for(var p in this.points){
         var np = this.points[p].project(tao * 10);
         newPoints[np] = np;
@@ -76,19 +132,5 @@ var Hexsphere = function(radius, numDivisions){
 
     this.points = newPoints;
 
-    this.tiles = [];
-
-    for(var c = 0; c< corners.length; c++){
-        this.tiles.push(new Tile(corners[c]));
-    }
-
-    var tileNum = 0;
-
-    while(tileNum < this.tiles.length){
-        console.log("Processing " + tileNum + " of " + this.tiles.length);
-        tileNum++;
-
-
-    }
     
 };

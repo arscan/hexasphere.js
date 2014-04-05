@@ -1,8 +1,17 @@
+var _faceCount = 0;
+
 var Face = function(point1, point2, point3){
+    this.id = _faceCount++;
 
     this.point1 = point1; // top
     this.point2 = point2; // bot left
     this.point3 = point3; // bot right
+
+    this.points = [
+        point1,
+        point2,
+        point3
+        ];
 };
 
 Face.prototype.subdivide = function(last, checkPoint){
@@ -41,6 +50,11 @@ Face.prototype.subdivide = function(last, checkPoint){
         this.point1.registerFace(nf1);
         this.point2.registerFace(nf2);
         this.point3.registerFace(nf4);
+        
+        if(this.point1.corner){
+            console.log("foudn a corner!");
+            console.log(this.point1.faces.length);
+        }
 
     }
 
@@ -52,4 +66,14 @@ Face.prototype.subdivide = function(last, checkPoint){
     return nf;
 
 };
+
+Face.prototype.findThirdPoint = function(point1, point2){
+    for(var i = 0; i < this.points.length; i++){
+        if(this.points[i].toString() !== point1.toString() && this.points[i].toString() !== point2.toString()){
+            return this.points[i];
+        }
+    }
+
+
+}
 

@@ -3,6 +3,7 @@ var Point = function(x,y,z){
         this.x = x;
         this.y = y;
         this.z = z;
+
     }
 
     this.faces = [];
@@ -56,6 +57,18 @@ Point.prototype.project = function(radius, percent){
 
 Point.prototype.registerFace = function(face){
     this.faces.push(face);
+}
+
+Point.prototype.findCommonFace = function(other, notThisFace){
+    for(var i = 0; i< this.faces.length; i++){
+        for(var j = 0; j< other.faces.length; j++){
+            if(this.faces[i].id === other.faces[j].id && this.faces[i].id !== notThisFace.id){
+                return this.faces[i];
+            }
+        }
+    }
+
+    return null;
 }
 
 Point.prototype.toString = function(){

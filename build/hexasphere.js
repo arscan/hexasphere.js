@@ -3,6 +3,7 @@ var Point = function(x,y,z){
         this.x = x;
         this.y = y;
         this.z = z;
+
     }
 
     this.faces = [];
@@ -58,6 +59,18 @@ Point.prototype.registerFace = function(face){
     this.faces.push(face);
 }
 
+Point.prototype.findCommonFace = function(other, notThisFace){
+    for(var i = 0; i< this.faces.length; i++){
+        for(var j = 0; j< other.faces.length; j++){
+            if(this.faces[i].id === other.faces[j].id && this.faces[i].id !== notThisFace.id){
+                return this.faces[i];
+            }
+        }
+    }
+
+    return null;
+}
+
 Point.prototype.toString = function(){
     return "" + this.x + "," + this.y + "," + this.z;
 
@@ -65,11 +78,20 @@ Point.prototype.toString = function(){
 
 
 
+var _faceCount = 0;
+
 var Face = function(point1, point2, point3){
+    this.id = _faceCount++;
 
     this.point1 = point1; // top
     this.point2 = point2; // bot left
     this.point3 = point3; // bot right
+
+    this.points = [
+        point1,
+        point2,
+        point3
+        ];
 };
 
 Face.prototype.subdivide = function(last, checkPoint){
@@ -108,6 +130,11 @@ Face.prototype.subdivide = function(last, checkPoint){
         this.point1.registerFace(nf1);
         this.point2.registerFace(nf2);
         this.point3.registerFace(nf4);
+        
+        if(this.point1.corner){
+            console.log("foudn a corner!");
+            console.log(this.point1.faces.length);
+        }
 
     }
 
@@ -120,14 +147,42 @@ Face.prototype.subdivide = function(last, checkPoint){
 
 };
 
+Face.prototype.findThirdPoint = function(point1, point2){
+    for(var i = 0; i < this.points.length; i++){
+        if(this.points[i].toString() !== point1.toString() && this.points[i].toString() !== point2.toString()){
+            return this.points[i];
+        }
+    }
+
+
+}
+
 
 var Tile = function(centerPoint){
     // make the tiles at the end.
     // we render the triangles by the center point out to a percentage of the permiters
 
     this.centerPoint = centerPoint;
+    this.faces = centerPoint.faces;
 
 };
+
+Tile.prototype.toString = function(){
+    return centerPoint.toString();
+
+};
+
+/*
+Tile.prototype.faces = function(){
+    console.log("---");
+    console.log(this.centerpoint.faces.length);
+    console.log("---");
+
+    return this.centerPoint.faces;
+
+
+};
+*/
 
 var Hexsphere = function(radius, numDivisions){
 
@@ -181,7 +236,7 @@ var Hexsphere = function(radius, numDivisions){
         numDivisions --;
         var facesNew = [];
         for(var i = 0; i< this.faces.length; i++){
-            var nf = this.faces[i].subdivide(i == 0, function(point){
+            var nf = this.faces[i].subdivide(numDivisions == 0, function(point){
                 if(_this.points[point]){
                     return _this.points[point];
                 } else {
@@ -200,6 +255,62 @@ var Hexsphere = function(radius, numDivisions){
     var newPoints = {};
 
 
+    this.tiles = [];
+    var finishedPoints ={};
+    var edgePoints ={};
+
+    for(var c = 0; c< corners.length; c++){
+        this.tiles.push(new Tile(corners[c]));
+        finishedPoints[corners[c]] = true;
+    }
+
+    var tileNum = 0;
+
+
+    while(tileNum < this.tiles.length){
+        for(var f = 0; f< this.tiles[tileNum].faces.length; f++){
+            var face = this.tiles[tileNum].faces[f];
+
+            var firstPoint = null;
+                var count = 0;
+            for(var p = 0; p < face.points.length; p++){
+                if(face.points[p].toString() != this.tiles[tileNum].centerPoint.toString()){
+                    count++;
+                    console.log(count);
+                    if(firstPoint == null){
+                        firstPoint = face.points[p];
+                    } else {
+                        var newFace = firstPoint.findCommonFace(face.points[p], face);
+                        var newCenter = newFace.findThirdPoint(face.points[p], firstPoint);
+                        var allok = true; // I shouldn't have to do this...
+                        if(!finishedPoints[newCenter.toString()] && !edgePoints[newCenter.toString()]){
+                            for(var x = 0; x < newCenter.faces.length; x++){
+                                for(var xy = 0; xy < newCenter.faces[x].points.length; xy++){
+                                    if(finishedPoints[newCenter.faces[x].points[xy]]){
+                                        allok = false;
+                                    }
+
+                                }
+
+                            }
+                            if(allok){
+                                finishedPoints[newCenter.toString()] = true;
+                                this.tiles.push(new Tile(newCenter));
+                            }
+                        }
+                        
+                    }
+                    edgePoints[firstPoint.toString()] = true;
+                    edgePoints[face.points[p].toString()] = true;
+                }
+            }
+            
+        }
+
+        tileNum++;
+
+    }
+
     for(var p in this.points){
         var np = this.points[p].project(tao * 10);
         newPoints[np] = np;
@@ -207,19 +318,5 @@ var Hexsphere = function(radius, numDivisions){
 
     this.points = newPoints;
 
-    this.tiles = [];
-
-    for(var c = 0; c< corners.length; c++){
-        this.tiles.push(new Tile(corners[c]));
-    }
-
-    var tileNum = 0;
-
-    while(tileNum < this.tiles.length){
-        console.log("Processing " + tileNum + " of " + this.tiles.length);
-        tileNum++;
-
-
-    }
     
 };

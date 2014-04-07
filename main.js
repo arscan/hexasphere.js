@@ -1,89 +1,47 @@
 $(function(){
 
-    var hexsphere = new Hexsphere(10, 3);
+    var hexasphere = new Hexasphere(10, 5, .9);
+    var width = $(window).width();
+    var height = $(window).height();
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setSize( 600, 500);
+    renderer.setSize( width, height);
 
-    var cameraDistance = 60;
-    var scene = new THREE.Scene();
-    scene.fog = new THREE.Fog( 0x000000, cameraDistance, cameraDistance * 1.2);
-
-
-    var lineMaterial = new THREE.LineBasicMaterial({
-        // color: opts.lineColor,
-        // linewidth: opts.lineWidth
-    });
-
-
-    var geometry = new THREE.Geometry();
-    geometry.dynamic = true;
-    var faces = hexsphere.faces;
-    var geometryIndex = 0;
-
-    var vp = [];
-    for(var i = 0; i< 1000; i++){
-        geometry.vertices.push(new THREE.Vector3(0,0,-500));
-    }
-
-    // var c = 0;
-    // for(var p in hexsphere.points){
-    //     var vertex = hexsphere.points[p];
-    //     geometry.vertices.push(vertex);
-    //     c++;
-    // }
-    for(var i = 0; i< faces.length; i++){
-        var vertex1 = new THREE.Vector3(faces[i].point1.x, faces[i].point1.y, faces[i].point1.z);
-        var vertex2 = new THREE.Vector3(faces[i].point2.x, faces[i].point2.y, faces[i].point2.z);
-        var vertex3 = new THREE.Vector3(faces[i].point3.x, faces[i].point3.y, faces[i].point3.z);
-
-        // geometry.vertices.push(vertex1);
-        // geometry.vertices.push(vertex2);
-        // geometry.vertices.push(vertex3);
-
-        var lineGeometry = new THREE.Geometry();
-
-        lineGeometry.vertices.push(vertex1);
-        lineGeometry.vertices.push(vertex2);
-        lineGeometry.vertices.push(vertex1);
-        lineGeometry.vertices.push(vertex3);
-        lineGeometry.vertices.push(vertex2);
-        lineGeometry.vertices.push(vertex3);
-
-        var line = new THREE.Line(lineGeometry, lineMaterial);
-        scene.add(line);
-    }
-
-    // for(var i = 0; i < hexsphere.tiles.length; i++){
-    //     var t = hexsphere.tiles[i];
-    //     geometry.vertices.push(new THREE.Vector3(t.centerPoint.x, t.centerPoint.y, t.centerPoint.z));
-
-
-    //     geometryIndex++;
-    // }
-
-    setInterval(function(){
-        if(geometryIndex < hexsphere.tiles.length){
-            var t = hexsphere.tiles[geometryIndex];
-            geometry.vertices[geometryIndex].set(t.centerPoint.x, t.centerPoint.y, t.centerPoint.z);
-            geometry.verticesNeedUpdate = true;
-        }
-        geometryIndex++;
-    }, 50);
-
-    var material = new THREE.ParticleSystemMaterial({size: 1});
-    var particles = new THREE.ParticleSystem(geometry, material);
-
-
-
-    $("#container").append(renderer.domElement);
-
-    var camera = new THREE.PerspectiveCamera( 50, 600 / 500, 1, 200);
+    var cameraDistance = 45;
+    var camera = new THREE.PerspectiveCamera( cameraDistance, width / height, 1, 200);
     camera.position.z = -cameraDistance;
-    scene.add(particles); 
 
+    var scene = new THREE.Scene();
+    scene.fog = new THREE.Fog( 0x000000, cameraDistance*.4, cameraDistance * 1.4);
 
+    var meshMaterials = [];
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0xffcc00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00eeee}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
 
+    for(var i = 0; i< hexasphere.tiles.length; i++){
+        if(Math.random() < .3){
+        var t = hexasphere.tiles[i];
+
+        var geometry = new THREE.Geometry();
+
+        for(var j = 0; j< t.boundary.length; j++){
+            var bp = t.boundary[j];
+            geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+        }
+        geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
+
+        geometry.faces.push(new THREE.Face3(0,1,2));
+        geometry.faces.push(new THREE.Face3(0,2,3));
+        geometry.faces.push(new THREE.Face3(0,3,4));
+        geometry.faces.push(new THREE.Face3(0,4,5));
+
+        var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
+        mesh.doubleSided = true;
+        scene.add(mesh);
+        }
+
+    }
 
     var startTime = Date.now();
     var lastTime = Date.now();
@@ -108,13 +66,10 @@ $(function(){
 
         requestAnimationFrame(tick);
 
-
     }
 
+    $("#container").append(renderer.domElement);
     requestAnimationFrame(tick);
-
-    window.hexsphere = hexsphere;
-
-
+    window.hexasphere = hexasphere;
 
 });

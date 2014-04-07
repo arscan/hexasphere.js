@@ -9,15 +9,21 @@ var Point = function(x,y,z){
     this.faces = [];
 }
 
-Point.prototype.midpoint = function(point){
+Point.prototype.segment = function(point, percent){
     var newPoint = new Point();
+    percent = Math.max(0.01, Math.min(1, percent));
 
-    newPoint.x = (this.x + point.x)/2;
-    newPoint.y = (this.y + point.y)/2;
-    newPoint.z = (this.z + point.z)/2;
-
+    newPoint.x = point.x * (1-percent) + this.x * percent;
+    newPoint.y = point.y * (1-percent) + this.y * percent;
+    newPoint.z = point.z * (1-percent) + this.z * percent;
     return newPoint;
+
+};
+
+Point.prototype.midpoint = function(point, location){
+    return this.segment(point, .5);
 }
+
 
 Point.prototype.project = function(radius, percent){
     if(percent == undefined){
@@ -35,28 +41,39 @@ Point.prototype.project = function(radius, percent){
     this.x = this.x * ratio * percent;
     this.y = this.y * ratio * percent;
     this.z = this.z * ratio * percent;
-
-
-
-    /*
-
-    var newx = Math.sqrt(Math.pow(radius,2) / (1 + Math.pow(yx,2) + Math.pow(zx,2)));
-    var newy = Math.sqrt((Math.pow(radius,2) - Math.pow(newx,2)) / (1 + Math.pow(yz,2)));
-    var newz = Math.sqrt((Math.pow(radius,2) - Math.pow(newx,2) - Math.pow(newy,2)));
-
-    this.x = newx;
-    this.y = newy;
-    this.z = newz;
-
-    console.log(Math.sqrt(Math.pow(newx,2) + Math.pow(newy,2) + Math.pow(newz,2)));
-   */
-
     return this;
 
 };
 
 Point.prototype.registerFace = function(face){
     this.faces.push(face);
+}
+
+Point.prototype.getOrderedFaces = function(){
+    var workingArray = this.faces.slice();
+    var ret = [];
+
+    var i = 0;
+    while(i < this.faces.length){
+        if(i == 0){
+            ret.push(workingArray[i]);
+            workingArray.splice(i,1);
+        } else {
+            var hit = false;
+            var j = 0;
+            while(j < workingArray.length && !hit){
+                if(workingArray[j].isAdjacentTo(ret[i-1])){
+                    hit = true;
+                    ret.push(workingArray[j]);
+                    workingArray.splice(j, 1);
+                }
+                j++;
+            }
+        }
+        i++;
+    }
+
+    return ret;
 }
 
 Point.prototype.findCommonFace = function(other, notThisFace){
@@ -83,10 +100,6 @@ var _faceCount = 0;
 var Face = function(point1, point2, point3){
     this.id = _faceCount++;
 
-    this.point1 = point1; // top
-    this.point2 = point2; // bot left
-    this.point3 = point3; // bot right
-
     this.points = [
         point1,
         point2,
@@ -105,14 +118,14 @@ Face.prototype.subdivide = function(last, checkPoint){
     }
 
     var nf = [];
-    var np1 = checkPoint(this.point1.midpoint(this.point2));
-    var np2 = checkPoint(this.point1.midpoint(this.point3));
-    var np3 = checkPoint(this.point3.midpoint(this.point2));
+    var np1 = checkPoint(this.points[0].midpoint(this.points[1]));
+    var np2 = checkPoint(this.points[0].midpoint(this.points[2]));
+    var np3 = checkPoint(this.points[2].midpoint(this.points[1]));
     
-    var nf1 = new Face(this.point1, np1, np2);
-    var nf2 = new Face(np1, this.point2, np3);
+    var nf1 = new Face(this.points[0], np1, np2);
+    var nf2 = new Face(np1, this.points[1], np3);
     var nf3 = new Face(np1, np2, np3);
-    var nf4 = new Face(np2, np3, this.point3);
+    var nf4 = new Face(np2, np3, this.points[2]);
 
     // the last time we are subdividing, register all the faces
     // with the point so we can figure out neighbors and 
@@ -127,13 +140,12 @@ Face.prototype.subdivide = function(last, checkPoint){
         np3.registerFace(nf2);
         np3.registerFace(nf3);
         np3.registerFace(nf4);
-        this.point1.registerFace(nf1);
-        this.point2.registerFace(nf2);
-        this.point3.registerFace(nf4);
+        this.points[0].registerFace(nf1);
+        this.points[1].registerFace(nf2);
+        this.points[2].registerFace(nf4);
         
-        if(this.point1.corner){
+        if(this.points[0].corner){
             console.log("foudn a corner!");
-            console.log(this.point1.faces.length);
         }
 
     }
@@ -147,44 +159,83 @@ Face.prototype.subdivide = function(last, checkPoint){
 
 };
 
+Face.prototype.getOtherPoints = function(point1){
+    var other = [];
+    for(var i = 0; i < this.points.length; i++){
+        if(this.points[i].toString() !== point1.toString()){
+            other.push(this.points[i]);
+        }
+    }
+    return other;
+}
+
 Face.prototype.findThirdPoint = function(point1, point2){
     for(var i = 0; i < this.points.length; i++){
         if(this.points[i].toString() !== point1.toString() && this.points[i].toString() !== point2.toString()){
             return this.points[i];
         }
     }
+}
 
+Face.prototype.isAdjacentTo = function(face2){
+    // adjacent if 2 of the points are the same
+    
+    var count = 0;
+    for(var i = 0; i< this.points.length; i++){
+        for(var j =0 ; j< face2.points.length; j++){
+            if(this.points[i].toString() == face2.points[j].toString()){
+                count++;
+                
+            }
+        }
+    }
+
+    return (count == 2);
+}
+
+Face.prototype.getCentroid = function(clear){
+    if(this.centroid && !clear){
+        return this.centroid;
+    }
+    var centroid = new Point();
+
+    centroid.x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
+    centroid.y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
+    centroid.z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+
+    this.centroid = centroid;
+
+    return centroid;
 
 }
 
 
-var Tile = function(centerPoint){
-    // make the tiles at the end.
-    // we render the triangles by the center point out to a percentage of the permiters
+var Tile = function(centerPoint, hexSize){
+    
+    if(hexSize == undefined){
+        hexSize = 1;
+    }
+
+    hexSize = Math.max(.01, Math.min(1.0, hexSize));
 
     this.centerPoint = centerPoint;
-    this.faces = centerPoint.faces;
+    this.faces = centerPoint.getOrderedFaces();
+    this.boundary = [];
+
+    this.triangles = [];
+
+
+    for(var f=0; f< this.faces.length; f++){
+        this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
+    }
 
 };
 
 Tile.prototype.toString = function(){
-    return centerPoint.toString();
-
+    return this.centerPoint.toString();
 };
 
-/*
-Tile.prototype.faces = function(){
-    console.log("---");
-    console.log(this.centerpoint.faces.length);
-    console.log("---");
-
-    return this.centerPoint.faces;
-
-
-};
-*/
-
-var Hexsphere = function(radius, numDivisions){
+var Hexasphere = function(radius, numDivisions, hexSize){
 
     var tao = 1.61803399;
     var corners = [
@@ -202,13 +253,13 @@ var Hexsphere = function(radius, numDivisions){
         new Point(-tao * radius,0,-radius)
     ];
 
-    this.points = {};
+    var points = {};
 
     for(var i = 0; i< corners.length; i++){
-        this.points[corners[i]] = corners[i];
+        points[corners[i]] = corners[i];
     }
 
-    this.faces = [
+    var faces = [
         new Face(corners[0], corners[1], corners[4]),
         new Face(corners[1], corners[9], corners[4]),
         new Face(corners[4], corners[9], corners[5]),
@@ -231,16 +282,15 @@ var Hexsphere = function(radius, numDivisions){
         new Face(corners[9], corners[1], corners[11])
     ];
 
-    var _this = this; // argh
     while(numDivisions > 0){
-        numDivisions --;
+        numDivisions--;
         var facesNew = [];
-        for(var i = 0; i< this.faces.length; i++){
-            var nf = this.faces[i].subdivide(numDivisions == 0, function(point){
-                if(_this.points[point]){
-                    return _this.points[point];
+        for(var i = 0; i< faces.length; i++){
+            var nf = faces[i].subdivide(numDivisions == 0, function(point){
+                if(points[point]){
+                    return points[point];
                 } else {
-                    _this.points[point] = point;
+                    points[point] = point;
                     return point;
                 }
             });
@@ -249,74 +299,21 @@ var Hexsphere = function(radius, numDivisions){
 
             }
         }
-        this.faces = facesNew;
+        faces = facesNew;
     }
 
     var newPoints = {};
-
-
-    this.tiles = [];
-    var finishedPoints ={};
-    var edgePoints ={};
-
-    for(var c = 0; c< corners.length; c++){
-        this.tiles.push(new Tile(corners[c]));
-        finishedPoints[corners[c]] = true;
-    }
-
-    var tileNum = 0;
-
-
-    while(tileNum < this.tiles.length){
-        for(var f = 0; f< this.tiles[tileNum].faces.length; f++){
-            var face = this.tiles[tileNum].faces[f];
-
-            var firstPoint = null;
-                var count = 0;
-            for(var p = 0; p < face.points.length; p++){
-                if(face.points[p].toString() != this.tiles[tileNum].centerPoint.toString()){
-                    count++;
-                    console.log(count);
-                    if(firstPoint == null){
-                        firstPoint = face.points[p];
-                    } else {
-                        var newFace = firstPoint.findCommonFace(face.points[p], face);
-                        var newCenter = newFace.findThirdPoint(face.points[p], firstPoint);
-                        var allok = true; // I shouldn't have to do this...
-                        if(!finishedPoints[newCenter.toString()] && !edgePoints[newCenter.toString()]){
-                            for(var x = 0; x < newCenter.faces.length; x++){
-                                for(var xy = 0; xy < newCenter.faces[x].points.length; xy++){
-                                    if(finishedPoints[newCenter.faces[x].points[xy]]){
-                                        allok = false;
-                                    }
-
-                                }
-
-                            }
-                            if(allok){
-                                finishedPoints[newCenter.toString()] = true;
-                                this.tiles.push(new Tile(newCenter));
-                            }
-                        }
-                        
-                    }
-                    edgePoints[firstPoint.toString()] = true;
-                    edgePoints[face.points[p].toString()] = true;
-                }
-            }
-            
-        }
-
-        tileNum++;
-
-    }
-
-    for(var p in this.points){
-        var np = this.points[p].project(tao * 10);
+    for(var p in points){
+        var np = points[p].project(tao * 10);
         newPoints[np] = np;
     }
 
-    this.points = newPoints;
+    points = newPoints;
 
-    
+    this.tiles = [];
+
+    for(var p in points){
+        this.tiles.push(new Tile(points[p], hexSize));
+    }
+
 };

@@ -1,25 +1,24 @@
-var Tile = function(centerPoint){
-    // make the tiles at the end.
-    // we render the triangles by the center point out to a percentage of the permiters
+var Tile = function(centerPoint, hexSize){
+    
+    if(hexSize == undefined){
+        hexSize = 1;
+    }
+
+    hexSize = Math.max(.01, Math.min(1.0, hexSize));
 
     this.centerPoint = centerPoint;
-    this.faces = centerPoint.faces;
+    this.faces = centerPoint.getOrderedFaces();
+    this.boundary = [];
+
+    this.triangles = [];
+
+
+    for(var f=0; f< this.faces.length; f++){
+        this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
+    }
 
 };
 
 Tile.prototype.toString = function(){
-    return centerPoint.toString();
-
+    return this.centerPoint.toString();
 };
-
-/*
-Tile.prototype.faces = function(){
-    console.log("---");
-    console.log(this.centerpoint.faces.length);
-    console.log("---");
-
-    return this.centerPoint.faces;
-
-
-};
-*/

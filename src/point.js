@@ -9,15 +9,21 @@ var Point = function(x,y,z){
     this.faces = [];
 }
 
-Point.prototype.midpoint = function(point){
+Point.prototype.segment = function(point, percent){
     var newPoint = new Point();
+    percent = Math.max(0.01, Math.min(1, percent));
 
-    newPoint.x = (this.x + point.x)/2;
-    newPoint.y = (this.y + point.y)/2;
-    newPoint.z = (this.z + point.z)/2;
-
+    newPoint.x = point.x * (1-percent) + this.x * percent;
+    newPoint.y = point.y * (1-percent) + this.y * percent;
+    newPoint.z = point.z * (1-percent) + this.z * percent;
     return newPoint;
+
+};
+
+Point.prototype.midpoint = function(point, location){
+    return this.segment(point, .5);
 }
+
 
 Point.prototype.project = function(radius, percent){
     if(percent == undefined){
@@ -35,28 +41,39 @@ Point.prototype.project = function(radius, percent){
     this.x = this.x * ratio * percent;
     this.y = this.y * ratio * percent;
     this.z = this.z * ratio * percent;
-
-
-
-    /*
-
-    var newx = Math.sqrt(Math.pow(radius,2) / (1 + Math.pow(yx,2) + Math.pow(zx,2)));
-    var newy = Math.sqrt((Math.pow(radius,2) - Math.pow(newx,2)) / (1 + Math.pow(yz,2)));
-    var newz = Math.sqrt((Math.pow(radius,2) - Math.pow(newx,2) - Math.pow(newy,2)));
-
-    this.x = newx;
-    this.y = newy;
-    this.z = newz;
-
-    console.log(Math.sqrt(Math.pow(newx,2) + Math.pow(newy,2) + Math.pow(newz,2)));
-   */
-
     return this;
 
 };
 
 Point.prototype.registerFace = function(face){
     this.faces.push(face);
+}
+
+Point.prototype.getOrderedFaces = function(){
+    var workingArray = this.faces.slice();
+    var ret = [];
+
+    var i = 0;
+    while(i < this.faces.length){
+        if(i == 0){
+            ret.push(workingArray[i]);
+            workingArray.splice(i,1);
+        } else {
+            var hit = false;
+            var j = 0;
+            while(j < workingArray.length && !hit){
+                if(workingArray[j].isAdjacentTo(ret[i-1])){
+                    hit = true;
+                    ret.push(workingArray[j]);
+                    workingArray.splice(j, 1);
+                }
+                j++;
+            }
+        }
+        i++;
+    }
+
+    return ret;
 }
 
 Point.prototype.findCommonFace = function(other, notThisFace){

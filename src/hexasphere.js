@@ -1,5 +1,6 @@
 var Hexasphere = function(radius, numDivisions, hexSize){
 
+    this.radius = radius;
     var tao = 1.61803399;
     var corners = [
         new Point(radius, tao * radius, 0),
@@ -67,11 +68,12 @@ var Hexasphere = function(radius, numDivisions, hexSize){
 
     var newPoints = {};
     for(var p in points){
-        var np = points[p].project(tao * 10);
+        var np = points[p].project(radius);
         newPoints[np] = np;
     }
 
     points = newPoints;
+
 
     this.tiles = [];
 

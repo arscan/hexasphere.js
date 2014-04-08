@@ -1,6 +1,6 @@
 $(function(){
 
-    var hexasphere = new Hexasphere(10, 5, .9);
+    var hexasphere = new Hexasphere(15, 6, .9);
     var width = $(window).width();
     var height = $(window).height();
 
@@ -12,7 +12,37 @@ $(function(){
     camera.position.z = -cameraDistance;
 
     var scene = new THREE.Scene();
-    scene.fog = new THREE.Fog( 0x000000, cameraDistance*.4, cameraDistance * 1.4);
+    scene.fog = new THREE.Fog( 0x000000, cameraDistance*.4, cameraDistance * 1.2);
+
+    var img = document.getElementById("projection");
+    var projectionCanvas = document.createElement('canvas');
+    var projectionContext = projectionCanvas.getContext('2d');
+
+    projectionCanvas.width = img.width;
+    projectionCanvas.height = img.height;
+    projectionContext.drawImage(img, 0, 0, img.width, img.height);
+    
+
+    var pixelData = null;
+
+    var maxLat = -100;
+    var maxLon = 0;
+    var minLat = 0;
+    var minLon = 0;
+
+    var isLand = function(lat, lon){
+
+        var x = parseInt(img.width * (lon + 180) / 360);
+        var y = parseInt(img.height * (lat+90) / 180);
+        
+
+
+        if(pixelData == null){
+            pixelData = projectionContext.getImageData(0,0,img.width, img.height);
+        }
+        return pixelData.data[(y * pixelData.width + x) * 4] === 0;
+    };
+
 
     var meshMaterials = [];
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0xffcc00}));
@@ -20,28 +50,36 @@ $(function(){
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
 
     for(var i = 0; i< hexasphere.tiles.length; i++){
-        if(Math.random() < .3){
         var t = hexasphere.tiles[i];
+        var latLon = t.getLatLon(hexasphere.radius);
 
-        var geometry = new THREE.Geometry();
+        if(isLand(latLon.lat, latLon.lon)){
+            var geometry = new THREE.Geometry();
 
-        for(var j = 0; j< t.boundary.length; j++){
-            var bp = t.boundary[j];
-            geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
-        }
-        geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
+            for(var j = 0; j< t.boundary.length; j++){
+                var bp = t.boundary[j];
+                geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+            }
+            geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
 
-        geometry.faces.push(new THREE.Face3(0,1,2));
-        geometry.faces.push(new THREE.Face3(0,2,3));
-        geometry.faces.push(new THREE.Face3(0,3,4));
-        geometry.faces.push(new THREE.Face3(0,4,5));
+            geometry.faces.push(new THREE.Face3(0,1,2));
+            geometry.faces.push(new THREE.Face3(0,2,3));
+            geometry.faces.push(new THREE.Face3(0,3,4));
+            geometry.faces.push(new THREE.Face3(0,4,5));
 
-        var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
-        mesh.doubleSided = true;
-        scene.add(mesh);
+            var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
+            mesh.doubleSided = true;
+            scene.add(mesh);
         }
 
     }
+
+    console.log("---- lon");
+    console.log(maxLon);
+    console.log(minLon);
+    console.log("---- lat");
+    console.log(maxLat);
+    console.log(minLat);
 
     var startTime = Date.now();
     var lastTime = Date.now();

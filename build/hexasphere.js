@@ -231,12 +231,22 @@ var Tile = function(centerPoint, hexSize){
 
 };
 
+Tile.prototype.getLatLon = function(radius){
+    var theta = Math.acos(this.centerPoint.y / radius); //lat 
+    var phi = Math.atan2(this.centerPoint.x ,this.centerPoint.z); // lon
+    return {
+        lat: 180 * theta / Math.PI - 90,
+        lon: 360 * phi / (2* Math.PI)
+    };
+};
+
 Tile.prototype.toString = function(){
     return this.centerPoint.toString();
 };
 
 var Hexasphere = function(radius, numDivisions, hexSize){
 
+    this.radius = radius;
     var tao = 1.61803399;
     var corners = [
         new Point(radius, tao * radius, 0),
@@ -304,11 +314,12 @@ var Hexasphere = function(radius, numDivisions, hexSize){
 
     var newPoints = {};
     for(var p in points){
-        var np = points[p].project(tao * 10);
+        var np = points[p].project(radius);
         newPoints[np] = np;
     }
 
     points = newPoints;
+
 
     this.tiles = [];
 

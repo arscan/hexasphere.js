@@ -74,13 +74,6 @@ $(function(){
 
     }
 
-    console.log("---- lon");
-    console.log(maxLon);
-    console.log(minLon);
-    console.log("---- lat");
-    console.log(maxLat);
-    console.log(minLat);
-
     var startTime = Date.now();
     var lastTime = Date.now();
     var cameraAngle = 0;

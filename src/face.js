@@ -1,65 +1,22 @@
 var _faceCount = 0;
 
-var Face = function(point1, point2, point3){
+var Face = function(point1, point2, point3, register){
     this.id = _faceCount++;
+
+    if(register == undefined){
+        register = true;
+    }
 
     this.points = [
         point1,
         point2,
         point3
         ];
-};
-
-Face.prototype.subdivide = function(last, checkPoint){
-
-    if(typeof last != "boolean"){
-        last = false;
+    if(register){
+        point1.registerFace(this);
+        point2.registerFace(this);
+        point3.registerFace(this);
     }
-
-    if(typeof checkPoint != "function"){
-        checkPoint = function(p){return p};
-    }
-
-    var nf = [];
-    var np1 = checkPoint(this.points[0].midpoint(this.points[1]));
-    var np2 = checkPoint(this.points[0].midpoint(this.points[2]));
-    var np3 = checkPoint(this.points[2].midpoint(this.points[1]));
-    
-    var nf1 = new Face(this.points[0], np1, np2);
-    var nf2 = new Face(np1, this.points[1], np3);
-    var nf3 = new Face(np1, np2, np3);
-    var nf4 = new Face(np2, np3, this.points[2]);
-
-    // the last time we are subdividing, register all the faces
-    // with the point so we can figure out neighbors and 
-    // build my hexes
-    if(last){
-        np1.registerFace(nf1);
-        np1.registerFace(nf2);
-        np1.registerFace(nf3);
-        np2.registerFace(nf1);
-        np2.registerFace(nf3);
-        np2.registerFace(nf4);
-        np3.registerFace(nf2);
-        np3.registerFace(nf3);
-        np3.registerFace(nf4);
-        this.points[0].registerFace(nf1);
-        this.points[1].registerFace(nf2);
-        this.points[2].registerFace(nf4);
-        
-        if(this.points[0].corner){
-            console.log("foudn a corner!");
-        }
-
-    }
-
-    nf.push(nf1);
-    nf.push(nf2);
-    nf.push(nf3);
-    nf.push(nf4);
-
-    return nf;
-
 };
 
 Face.prototype.getOtherPoints = function(point1){

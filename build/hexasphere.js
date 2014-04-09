@@ -9,6 +9,25 @@ var Point = function(x,y,z){
     this.faces = [];
 }
 
+Point.prototype.subdivide = function(point, count, checkPoint){
+
+    var segments = [];
+    segments.push(this);
+
+    for(var i = 1; i< count; i++){
+        var np = new Point(this.x * (1-(i/count)) + point.x * (i/count),
+            this.y * (1-(i/count)) + point.y * (i/count),
+            this.z * (1-(i/count)) + point.z * (i/count));
+        np = checkPoint(np);
+        segments.push(np);
+    }
+
+    segments.push(point);
+
+    return segments;
+
+}
+
 Point.prototype.segment = function(point, percent){
     var newPoint = new Point();
     percent = Math.max(0.01, Math.min(1, percent));
@@ -88,8 +107,10 @@ Point.prototype.findCommonFace = function(other, notThisFace){
     return null;
 }
 
+
+
 Point.prototype.toString = function(){
-    return "" + this.x + "," + this.y + "," + this.z;
+    return "" + Math.round(this.x*100)/100 + "," + Math.round(this.y*100)/100 + "," + Math.round(this.z*100)/100;
 
 }
 
@@ -97,66 +118,23 @@ Point.prototype.toString = function(){
 
 var _faceCount = 0;
 
-var Face = function(point1, point2, point3){
+var Face = function(point1, point2, point3, register){
     this.id = _faceCount++;
+
+    if(register == undefined){
+        register = true;
+    }
 
     this.points = [
         point1,
         point2,
         point3
         ];
-};
-
-Face.prototype.subdivide = function(last, checkPoint){
-
-    if(typeof last != "boolean"){
-        last = false;
+    if(register){
+        point1.registerFace(this);
+        point2.registerFace(this);
+        point3.registerFace(this);
     }
-
-    if(typeof checkPoint != "function"){
-        checkPoint = function(p){return p};
-    }
-
-    var nf = [];
-    var np1 = checkPoint(this.points[0].midpoint(this.points[1]));
-    var np2 = checkPoint(this.points[0].midpoint(this.points[2]));
-    var np3 = checkPoint(this.points[2].midpoint(this.points[1]));
-    
-    var nf1 = new Face(this.points[0], np1, np2);
-    var nf2 = new Face(np1, this.points[1], np3);
-    var nf3 = new Face(np1, np2, np3);
-    var nf4 = new Face(np2, np3, this.points[2]);
-
-    // the last time we are subdividing, register all the faces
-    // with the point so we can figure out neighbors and 
-    // build my hexes
-    if(last){
-        np1.registerFace(nf1);
-        np1.registerFace(nf2);
-        np1.registerFace(nf3);
-        np2.registerFace(nf1);
-        np2.registerFace(nf3);
-        np2.registerFace(nf4);
-        np3.registerFace(nf2);
-        np3.registerFace(nf3);
-        np3.registerFace(nf4);
-        this.points[0].registerFace(nf1);
-        this.points[1].registerFace(nf2);
-        this.points[2].registerFace(nf4);
-        
-        if(this.points[0].corner){
-            console.log("foudn a corner!");
-        }
-
-    }
-
-    nf.push(nf1);
-    nf.push(nf2);
-    nf.push(nf3);
-    nf.push(nf4);
-
-    return nf;
-
 };
 
 Face.prototype.getOtherPoints = function(point1){
@@ -270,47 +248,64 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     }
 
     var faces = [
-        new Face(corners[0], corners[1], corners[4]),
-        new Face(corners[1], corners[9], corners[4]),
-        new Face(corners[4], corners[9], corners[5]),
-        new Face(corners[5], corners[9], corners[3]),
-        new Face(corners[2], corners[3], corners[7]),
-        new Face(corners[3], corners[2], corners[5]),
-        new Face(corners[7], corners[10], corners[2]),
-        new Face(corners[0], corners[8], corners[10]),
-        new Face(corners[0], corners[4], corners[8]),
-        new Face(corners[8], corners[2], corners[10]),
-        new Face(corners[8], corners[4], corners[5]),
-        new Face(corners[8], corners[5], corners[2]),
-        new Face(corners[1], corners[0], corners[6]),
-        new Face(corners[11], corners[1], corners[6]),
-        new Face(corners[3], corners[9], corners[11]),
-        new Face(corners[6], corners[10], corners[7]),
-        new Face(corners[3], corners[11], corners[7]),
-        new Face(corners[11], corners[6], corners[7]),
-        new Face(corners[6], corners[0], corners[10]),
-        new Face(corners[9], corners[1], corners[11])
+        new Face(corners[0], corners[1], corners[4], false),
+        new Face(corners[1], corners[9], corners[4], false),
+        new Face(corners[4], corners[9], corners[5], false),
+        new Face(corners[5], corners[9], corners[3], false),
+        new Face(corners[2], corners[3], corners[7], false),
+        new Face(corners[3], corners[2], corners[5], false),
+        new Face(corners[7], corners[10], corners[2], false),
+        new Face(corners[0], corners[8], corners[10], false),
+        new Face(corners[0], corners[4], corners[8], false),
+        new Face(corners[8], corners[2], corners[10], false),
+        new Face(corners[8], corners[4], corners[5], false),
+        new Face(corners[8], corners[5], corners[2], false),
+        new Face(corners[1], corners[0], corners[6], false),
+        new Face(corners[11], corners[1], corners[6], false),
+        new Face(corners[3], corners[9], corners[11], false),
+        new Face(corners[6], corners[10], corners[7], false),
+        new Face(corners[3], corners[11], corners[7], false),
+        new Face(corners[11], corners[6], corners[7], false),
+        new Face(corners[6], corners[0], corners[10], false),
+        new Face(corners[9], corners[1], corners[11], false)
     ];
 
-    while(numDivisions > 0){
-        numDivisions--;
-        var facesNew = [];
-        for(var i = 0; i< faces.length; i++){
-            var nf = faces[i].subdivide(numDivisions == 0, function(point){
-                if(points[point]){
-                    return points[point];
-                } else {
-                    points[point] = point;
-                    return point;
-                }
-            });
-            for(var j = 0; j < nf.length; j++){
-                facesNew.push(nf[j]);
+    var getPointIfExists = function(point){
+        if(points[point]){
+            // console.log("EXISTING!");
+            return points[point];
+        } else {
+            // console.log("NOT EXISTING!");
+            points[point] = point;
+            return point;
+        }
+    };
 
+
+    var newFaces = [];
+
+    for(var f = 0; f< faces.length; f++){
+        // console.log("-0---");
+        var prev = null;
+        var bottom = [faces[f].points[0]];
+        var left = faces[f].points[0].subdivide(faces[f].points[1], numDivisions, getPointIfExists);
+        var right = faces[f].points[0].subdivide(faces[f].points[2], numDivisions, getPointIfExists);
+        for(var i = 1; i<= numDivisions; i++){
+            prev = bottom;
+            bottom = left[i].subdivide(right[i], i, getPointIfExists);
+            for(var j = 0; j< i; j++){
+                var nf = new Face(prev[j], bottom[j], bottom[j+1]); 
+                newFaces.push(nf);
+
+                if(j > 0){
+                    nf = new Face(prev[j-1], prev[j], bottom[j]);
+                    newFaces.push(nf);
+                }
             }
         }
-        faces = facesNew;
     }
+
+    faces = newFaces;
 
     var newPoints = {};
     for(var p in points){
@@ -319,7 +314,6 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     }
 
     points = newPoints;
-
 
     this.tiles = [];
 

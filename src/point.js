@@ -9,6 +9,25 @@ var Point = function(x,y,z){
     this.faces = [];
 }
 
+Point.prototype.subdivide = function(point, count, checkPoint){
+
+    var segments = [];
+    segments.push(this);
+
+    for(var i = 1; i< count; i++){
+        var np = new Point(this.x * (1-(i/count)) + point.x * (i/count),
+            this.y * (1-(i/count)) + point.y * (i/count),
+            this.z * (1-(i/count)) + point.z * (i/count));
+        np = checkPoint(np);
+        segments.push(np);
+    }
+
+    segments.push(point);
+
+    return segments;
+
+}
+
 Point.prototype.segment = function(point, percent){
     var newPoint = new Point();
     percent = Math.max(0.01, Math.min(1, percent));
@@ -88,8 +107,10 @@ Point.prototype.findCommonFace = function(other, notThisFace){
     return null;
 }
 
+
+
 Point.prototype.toString = function(){
-    return "" + this.x + "," + this.y + "," + this.z;
+    return "" + Math.round(this.x*100)/100 + "," + Math.round(this.y*100)/100 + "," + Math.round(this.z*100)/100;
 
 }
 

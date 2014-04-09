@@ -1,13 +1,13 @@
 $(function(){
 
-    var hexasphere = new Hexasphere(15, 6, .9);
+    var hexasphere = new Hexasphere(30, 50, .95);
     var width = $(window).width();
     var height = $(window).height();
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( width, height);
 
-    var cameraDistance = 45;
+    var cameraDistance = 65;
     var camera = new THREE.PerspectiveCamera( cameraDistance, width / height, 1, 200);
     camera.position.z = -cameraDistance;
 

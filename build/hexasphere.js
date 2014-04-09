@@ -227,18 +227,18 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     this.radius = radius;
     var tao = 1.61803399;
     var corners = [
-        new Point(radius, tao * radius, 0),
-        new Point(-radius, tao * radius, 0),
-        new Point(radius,-tao * radius,0),
-        new Point(-radius,-tao * radius,0),
-        new Point(0,radius,tao * radius),
-        new Point(0,-radius,tao * radius),
-        new Point(0,radius,-tao * radius),
-        new Point(0,-radius,-tao * radius),
-        new Point(tao * radius,0,radius),
-        new Point(-tao * radius,0,radius),
-        new Point(tao * radius,0,-radius),
-        new Point(-tao * radius,0,-radius)
+        new Point(1000, tao * 1000, 0),
+        new Point(-1000, tao * 1000, 0),
+        new Point(1000,-tao * 1000,0),
+        new Point(-1000,-tao * 1000,0),
+        new Point(0,1000,tao * 1000),
+        new Point(0,-1000,tao * 1000),
+        new Point(0,1000,-tao * 1000),
+        new Point(0,-1000,-tao * 1000),
+        new Point(tao * 1000,0,1000),
+        new Point(-tao * 1000,0,1000),
+        new Point(tao * 1000,0,-1000),
+        new Point(-tao * 1000,0,-1000)
     ];
 
     var points = {};

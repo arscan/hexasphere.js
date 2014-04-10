@@ -1,10 +1,10 @@
 Hexasphere.js
 =============
-Would you like a sphere that is covered completely in hexagons of equal size?  Turns out that's not possible, but a sphere that is covered by all hexagons except for 12 pentagons is pretty straightfoward to contruct.  Just start with a icosohedron, subdivide each face to the appropriate resolution, project onto a sphere, and construct the hexagons by connecting midpoints of the resulting triangles.  The corner tiles of the original icosohedron are pentagons, but the rest of the sphere will be covered by hexagons.
+Would you like a sphere that is covered completely in hexagons of equal size?  Turns out that's not possible, but a sphere that is covered by all hexagons except for 12 pentagons is pretty straightfoward to contruct.  Starting with a icosohedron, subdivide each face to the appropriate resolution, project onto a sphere, and create the hexagons by connecting midpoints of the resulting triangles.  The corner tiles of the original icosohedron are pentagons, but the rest of the sphere will be covered by hexagons.
 
 Its not perfect, but for many applications it is probably good enough.
 
-This is a javascript implementation of the above method.  I use it to build the [Encom Globe](http://github.com/arscan/encom-globe), and it could be used for games or other "useful" applications. At the very least this might be useful as a reference impelmentation for people trying to something similar.
+This is a javascript implementation of the above method.  I use it to build the [Encom Globe](http://github.com/arscan/encom-globe), and it could be used for games or other "useful" applications. At the very least this might be useful as a reference implementation for people trying to something similar.
 
 ![Screenshot](screenshot.jpg)
 
@@ -14,9 +14,9 @@ Usage
 The basic usage is as follows: 
 
 ```javascript
-var radius = 15;	// radius used to calculate position of tiles
-var subDivisions = 5;   // subdivide the face this many times
-var tileWidth = 0.9;    // if tileWidth < 1, it will add padding between tiles
+var radius = 15;        // Radius used to calculate position of tiles
+var subDivisions = 5;   // Divide each edge of the icosohedron into this many segments
+var tileWidth = 0.9;    // Add padding (1.0 = no padding; 0.1 = mostly padding)
 
 var hexasphere = new Hexasphere(radius, subDivisions, tileWidth);
 for(var i = 0; i< hexasphere.tiles.length; i++){

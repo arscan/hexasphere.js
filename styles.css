@@ -1,8 +1,61 @@
 body {
+    color: #fff;
     background-color: #000;
+    font: 10pt sans-serif;
+    line-height: 1.3em;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    color: #ffcc00;
 }
 
 img {
     display:none;
 
 }
+
+#container {
+    margin: 0;
+    padding: 0;
+
+}
+
+#banner {
+    font: 20pt Georgia;
+    font-weight: bold;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 5;
+    border-bottom: 1px solid #333;
+    width: 300px;
+    padding-bottom: 5px;
+
+}
+
+#infobox {
+    position: absolute;
+    top: 50px;
+    z-index: 5;
+    left: 24px;
+    width: 300px;
+    font-color: #999;
+}
+
+#ident {
+    position: absolute;
+    z-index: 5;
+    bottom: 10px;
+    font-siz: 10pt;
+    right: 24px;
+
+}
+
+#ident a{
+    color: #00eeee;
+
+}
+
+

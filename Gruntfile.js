@@ -4,8 +4,8 @@ module.exports = function(grunt) {
         concat: {
             options: {
                 separator: "\n",
-                // banner: ";var ENCOM = (function(ENCOM, THREE, document){\n\n",
-                // footer: "\nENCOM.Globe = Globe; return ENCOM;\n\n})(ENCOM || {}, THREE, document);"
+                banner: "var Hexasphere = (function(){\n\n",
+                footer: "\n\nreturn Hexasphere; \n\n})();"
             },
             dist: {
                 src: [
@@ -25,20 +25,6 @@ module.exports = function(grunt) {
             tasks: ['concat'],
             files: ['src/*.js', 'main.js', 'index.html', 'styles.css', 'Gruntfile.js']
         },
-
-        // copy: {
-        //     main : {
-        //         files: [
-        //         {
-        //             src: 'bower_components/quadtree2/quadtree2.js',
-        //             dest: 'include/quadtree2.js'
-        //         },
-        //         {
-        //             src: 'bower_components/vec2/vec2.js',
-        //             dest: 'include/vec2.js'
-        //         }]
-        //     }
-        // }
     });
 
 

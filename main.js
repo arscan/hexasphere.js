@@ -1,8 +1,8 @@
 $(function(){
 
-    var hexasphere = new Hexasphere(30, 50, .95);
-    var width = $(window).width();
-    var height = $(window).height();
+    var hexasphere = new Hexasphere(30, 30, .95);
+    var width = $(window).innerWidth() - 20;
+    var height = $(window).innerHeight() - 20;
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( width, height);

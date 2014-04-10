@@ -1,3 +1,5 @@
+var Hexasphere = (function(){
+
 var Point = function(x,y,z){
     if(x !== undefined && y !== undefined && z !== undefined){
         this.x = x;
@@ -322,3 +324,8 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     }
 
 };
+
+
+return Hexasphere; 
+
+})();

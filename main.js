@@ -1,8 +1,8 @@
-$(function(){
+$(window).load(function(){
 
     var hexasphere = new Hexasphere(30, 30, .95);
-    var width = $(window).innerWidth() - 20;
-    var height = $(window).innerHeight() - 20;
+    var width = $(window).innerWidth();
+    var height = $(window).innerHeight()-10;
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( width, height);
@@ -98,6 +98,15 @@ $(function(){
         requestAnimationFrame(tick);
 
     }
+
+    function onWindowResize(){
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    window.addEventListener( 'resize', onWindowResize, false );
 
     $("#container").append(renderer.domElement);
     requestAnimationFrame(tick);

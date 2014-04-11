@@ -1,6 +1,6 @@
 {
   "name": "hexasphere.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "hexasphere",
   "main": "build/hexasphere.js",
   "dependencies": {

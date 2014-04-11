@@ -1,8 +1,8 @@
 body {
     color: #fff;
     background-color: #000;
-    font: 10pt sans-serif;
-    line-height: 1.3em;
+    font: 14pt sans-serif;
+    line-height: 1.5em;
     padding: 0;
     margin: 0;
 }
@@ -17,8 +17,14 @@ img {
 }
 
 #container {
+    position:absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 
 }
 
@@ -30,18 +36,21 @@ img {
     left: 20px;
     z-index: 5;
     border-bottom: 1px solid #333;
-    width: 300px;
+    width: 330px;
     padding-bottom: 5px;
+    background-color: rgba(0,0,0,.9);
 
 }
 
 #infobox {
     position: absolute;
-    top: 50px;
-    z-index: 5;
-    left: 24px;
-    width: 300px;
+    top: 55px;
+    z-index: 3;
+    left: 10px;
+    width: 325px;
     font-color: #999;
+    background-color: rgba(0,0,0,.8);
+    padding-left: 15px;
 }
 
 #ident {
@@ -49,7 +58,7 @@ img {
     z-index: 5;
     bottom: 10px;
     font-siz: 10pt;
-    right: 24px;
+    left: 24px;
 
 }
 
@@ -58,4 +67,12 @@ img {
 
 }
 
+@media (max-height: 420px) {
+    body {
+        font-size: 10pt;
+    }
+    #container {
+        padding-left: 200px;
 
+    }
+}

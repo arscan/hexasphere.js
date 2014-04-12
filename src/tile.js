@@ -28,6 +28,18 @@ Tile.prototype.getLatLon = function(radius){
     };
 };
 
+Tile.prototype.scaledBoundary = function(scale){
+
+    scale = Math.max(0, Math.min(1, scale));
+
+    var ret = [];
+    for(var i = 0; i < this.boundary.length; i++){
+        ret.push(this.centerPoint.segment(this.boundary[i], 1 - scale));
+    }
+
+    return ret;
+};
+
 Tile.prototype.toString = function(){
     return this.centerPoint.toString();
 };

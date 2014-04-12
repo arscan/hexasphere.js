@@ -55,7 +55,7 @@ $(window).load(function(){
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00aa11}));
 
-    var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00eeee, opacity: .05, linewidth: 1, transparent: true} );
+    var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00eeee, opacity: .1, linewidth: 1, transparent: true} );
 
     for(var i = 0; i< hexasphere.tiles.length; i++){
         var t = hexasphere.tiles[i];

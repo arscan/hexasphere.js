@@ -1,6 +1,6 @@
 $(window).load(function(){
 
-    var hexasphere = new Hexasphere(30, 30, .95);
+    var hexasphere = new Hexasphere(30, 25, .95);
     var width = $(window).innerWidth();
     var height = $(window).innerHeight()-10;
 
@@ -45,22 +45,31 @@ $(window).load(function(){
 
 
     var meshMaterials = [];
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0xffcc00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00eeee}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x7cfc00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x397d02}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x77ee00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x61b329}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x83f52c}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x83f52c}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x4cbb17}));
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00aa11}));
+
+    var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00eeee, opacity: .05, linewidth: 1, transparent: true} );
 
     for(var i = 0; i< hexasphere.tiles.length; i++){
         var t = hexasphere.tiles[i];
         var latLon = t.getLatLon(hexasphere.radius);
 
-        if(isLand(latLon.lat, latLon.lon)){
-            var geometry = new THREE.Geometry();
+        var geometry = new THREE.Geometry();
 
-            for(var j = 0; j< t.boundary.length; j++){
-                var bp = t.boundary[j];
-                geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
-            }
-            geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
+        for(var j = 0; j< t.boundary.length; j++){
+            var bp = t.boundary[j];
+            geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+        }
+        geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
+
+        if(isLand(latLon.lat, latLon.lon)){
 
             geometry.faces.push(new THREE.Face3(0,1,2));
             geometry.faces.push(new THREE.Face3(0,2,3));
@@ -70,7 +79,10 @@ $(window).load(function(){
             var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
             mesh.doubleSided = true;
             scene.add(mesh);
-        }
+         } else {
+             scene.add(new THREE.Line(geometry, lineMaterial));
+         
+         }
 
     }
 
@@ -83,7 +95,7 @@ $(window).load(function(){
 
         var dt = Date.now() - lastTime;
 
-        var rotateCameraBy = (2 * Math.PI)/(100000/dt);
+        var rotateCameraBy = (2 * Math.PI)/(200000/dt);
         cameraAngle += rotateCameraBy;
 
         lastTime = Date.now();

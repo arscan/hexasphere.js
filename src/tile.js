@@ -1,3 +1,5 @@
+var Point = require('./point');
+
 var Tile = function(centerPoint, hexSize){
     
     if(hexSize == undefined){
@@ -43,3 +45,5 @@ Tile.prototype.scaledBoundary = function(scale){
 Tile.prototype.toString = function(){
     return this.centerPoint.toString();
 };
+
+module.exports = Tile;

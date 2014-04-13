@@ -1,3 +1,7 @@
+var Tile = require('./tile'),
+    Face = require('./face'),
+    Point = require('./point');
+
 var Hexasphere = function(radius, numDivisions, hexSize){
 
     this.radius = radius;
@@ -98,3 +102,5 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     }
 
 };
+
+module.exports = Hexasphere;

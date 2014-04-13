@@ -1,3 +1,5 @@
+var Point = require('./point');
+
 var _faceCount = 0;
 
 var Face = function(point1, point2, point3, register){
@@ -69,3 +71,4 @@ Face.prototype.getCentroid = function(clear){
 
 }
 
+module.exports = Face;

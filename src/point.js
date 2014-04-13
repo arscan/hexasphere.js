@@ -114,4 +114,4 @@ Point.prototype.toString = function(){
 
 }
 
-
+module.exports = Point;

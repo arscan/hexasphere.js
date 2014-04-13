@@ -2,7 +2,7 @@
   "name": "hexasphere.js",
   "version": "0.1.0",
   "description": "hexasphere",
-  "main": "build/hexasphere.js",
+  "main": "src/hexasphere.js",
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-watch": "~0.5.3",

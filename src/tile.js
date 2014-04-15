@@ -26,13 +26,17 @@ Tile.prototype.getLatLon = function(radius, boundaryNum){
     if(typeof boundaryNum == "number" && boundaryNum < this.boundary.length){
         point = this.boundary[boundaryNum];
     }
-    var theta = Math.acos(point.y / radius); //lat 
-    var phi = Math.atan2(point.x, point.z); // lon
+    var phi = Math.acos(point.y / radius); //lat 
+    var theta = (Math.atan2(point.x, point.z) + Math.PI + Math.PI / 2) % (Math.PI * 2) - Math.PI; // lon
+    
+    // theta is a hack, since I want to rotate by Math.PI/2 to start.  sorryyyyyyyyyyy
     return {
-        lat: 180 * theta / Math.PI - 90,
-        lon: 360 * phi / (2* Math.PI)
+        lat: 180 * phi / Math.PI - 90,
+        lon: 180 * theta / Math.PI
     };
 };
+
+
 
 Tile.prototype.scaledBoundary = function(scale){
 

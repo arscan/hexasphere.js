@@ -21,9 +21,13 @@ var Tile = function(centerPoint, hexSize){
 
 };
 
-Tile.prototype.getLatLon = function(radius){
-    var theta = Math.acos(this.centerPoint.y / radius); //lat 
-    var phi = Math.atan2(this.centerPoint.x ,this.centerPoint.z); // lon
+Tile.prototype.getLatLon = function(radius, boundaryNum){
+    var point = this.centerPoint;
+    if(typeof boundaryNum == "number" && boundaryNum < this.boundary.length){
+        point = this.boundary[boundaryNum];
+    }
+    var theta = Math.acos(point.y / radius); //lat 
+    var phi = Math.atan2(point.x, point.z); // lon
     return {
         lat: 180 * theta / Math.PI - 90,
         lon: 360 * phi / (2* Math.PI)

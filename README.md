@@ -25,7 +25,7 @@ for(var i = 0; i< hexasphere.tiles.length; i++){
 }
 ```
 
-Check out a [demo on my website](http://www.robscanlon.com/hexasphere).  The demo uses three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.
+Check out a [demo on my website](https://www.robscanlon.com/hexasphere).  The demo uses three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.
 
 License
 --------

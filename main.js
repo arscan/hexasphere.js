@@ -59,29 +59,35 @@ $(window).load(function(){
 
     var objV = [];
     var objF = [];
+    var downloadOutput = "";
 
+    var count =0 
     for(var i = 0; i< hexasphere.tiles.length; i++){
         var t = hexasphere.tiles[i];
         
         var F = []
         for(var j = 0; j< t.boundary.length; j++){
+            count++;
             objV.push(t.boundary[j])
-            F.push(j + i)
+            F.unshift(count)
         }
 
         objF.push(F);
     }
 
     for(var i =0; i< objV.length; i++){
-        document.write('v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n');
+        downloadOutput += 'v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n';
     }
     for(var i =0; i< objF.length; i++){
         faceString = 'f ';
         for(var j = 0; j < objF[i].length; j++){
             faceString = faceString + ' ' + objF[i][j];
         }
-        document.write(faceString + '\n');
+        downloadOutput += faceString + '\n';
     }
+
+    var blob = new Blob([downloadOutput], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, 'test.obj')
 
     for(var i = 0; i< hexasphere.tiles.length; i++){
         var t = hexasphere.tiles[i];

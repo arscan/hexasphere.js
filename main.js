@@ -59,7 +59,7 @@ $(window).load(function(){
 
     var objV = [];
     var objF = [];
-    var downloadOutput = "";
+    var downloadOutput = "# vertices \n";
 
     var count =0 
     for(var i = 0; i< hexasphere.tiles.length; i++){
@@ -78,8 +78,10 @@ $(window).load(function(){
     for(var i =0; i< objV.length; i++){
         downloadOutput += 'v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n';
     }
+
+    downloadOutput += '\n# faces\n';
     for(var i =0; i< objF.length; i++){
-        faceString = 'f ';
+        faceString = 'f';
         for(var j = 0; j < objF[i].length; j++){
             faceString = faceString + ' ' + objF[i][j];
         }

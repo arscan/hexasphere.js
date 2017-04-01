@@ -3,6 +3,7 @@ $(window).load(function(){
     var hexasphere = new Hexasphere(30, 25, .95);
     var width = $(window).innerWidth();
     var height = $(window).innerHeight()-10;
+    var depthRatio = 1.02
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( width, height);
@@ -63,18 +64,49 @@ $(window).load(function(){
 
         var geometry = new THREE.Geometry();
 
+        // inside points
         for(var j = 0; j< t.boundary.length; j++){
             var bp = t.boundary[j];
             geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
         }
         geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
+        
+        // outside points
+        for(var j = 0; j< t.boundary.length; j++){
+            var bp = t.boundary[j];
+            geometry.vertices.push(new THREE.Vector3(bp.x * depthRatio, bp.y * depthRatio, bp.z * depthRatio));
+        }
+        geometry.vertices.push(new THREE.Vector3(t.boundary[0].x * depthRatio, t.boundary[0].y * depthRatio, t.boundary[0].z * depthRatio));
 
         if(isLand(latLon.lat, latLon.lon)){
 
+            // bottom
             geometry.faces.push(new THREE.Face3(0,1,2));
             geometry.faces.push(new THREE.Face3(0,2,3));
             geometry.faces.push(new THREE.Face3(0,3,4));
             geometry.faces.push(new THREE.Face3(0,4,5));
+
+            // top
+            geometry.faces.push(new THREE.Face3(7,8,9));
+            geometry.faces.push(new THREE.Face3(7,9,10));
+            geometry.faces.push(new THREE.Face3(7,10,11));
+            if(geometry.vertices.length > 12) {
+                geometry.faces.push(new THREE.Face3(7,11,12));
+            }
+
+            // sides
+            geometry.faces.push(new THREE.Face3(0,1,7));
+            geometry.faces.push(new THREE.Face3(1,7,8));
+            geometry.faces.push(new THREE.Face3(1,2,8));
+            geometry.faces.push(new THREE.Face3(2,8,9));
+            geometry.faces.push(new THREE.Face3(2,3,9));
+            geometry.faces.push(new THREE.Face3(3,9,10));
+            geometry.faces.push(new THREE.Face3(3,4,10));
+            geometry.faces.push(new THREE.Face3(4,10,11));
+            if(geometry.vertices.length > 12) {
+                geometry.faces.push(new THREE.Face3(4,5,11));
+                geometry.faces.push(new THREE.Face3(5,11,12));
+            }
 
             var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
             mesh.doubleSided = true;

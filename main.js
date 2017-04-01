@@ -57,6 +57,32 @@ $(window).load(function(){
 
     var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00eeee, opacity: .1, linewidth: 1, transparent: true} );
 
+    var objV = [];
+    var objF = [];
+
+    for(var i = 0; i< hexasphere.tiles.length; i++){
+        var t = hexasphere.tiles[i];
+        
+        var F = []
+        for(var j = 0; j< t.boundary.length; j++){
+            objV.push(t.boundary[j])
+            F.push(j + i)
+        }
+
+        objF.push(F);
+    }
+
+    for(var i =0; i< objV.length; i++){
+        document.write('v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n');
+    }
+    for(var i =0; i< objF.length; i++){
+        faceString = 'f ';
+        for(var j = 0; j < objF[i].length; j++){
+            faceString = faceString + ' ' + objF[i][j];
+        }
+        document.write(faceString + '\n');
+    }
+
     for(var i = 0; i< hexasphere.tiles.length; i++){
         var t = hexasphere.tiles[i];
         var latLon = t.getLatLon(hexasphere.radius);

@@ -1,6 +1,5 @@
 $(window).load(function(){
 
-    var hexasphere = new Hexasphere(30, 25, .95);
     var width = $(window).innerWidth();
     var height = $(window).innerHeight()-10;
 
@@ -55,74 +54,55 @@ $(window).load(function(){
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
     meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00aa11}));
 
-    var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00eeee, opacity: .1, linewidth: 1, transparent: true} );
+    var oceanMaterial = []
+    oceanMaterial.push(new THREE.MeshBasicMaterial({opacity: .5, side: THREE.DoubleSide, color: 0x0f2342}));
+    oceanMaterial.push(new THREE.MeshBasicMaterial({opacity: .5, side: THREE.DoubleSide, color: 0x0f1e38}));
 
-    var objV = [];
-    var objF = [];
-    var downloadOutput = "# vertices \n";
-
-    var count =0 
-    for(var i = 0; i< hexasphere.tiles.length; i++){
-        var t = hexasphere.tiles[i];
-        
-        var F = []
-        for(var j = 0; j< t.boundary.length; j++){
-            count++;
-            objV.push(t.boundary[j])
-            F.unshift(count)
+    var createScene = function(radius, divisions, tileSize){
+        while(scene.children.length > 0){ 
+            scene.remove(scene.children[0]); 
         }
+        var hexasphere = new Hexasphere(radius, divisions, tileSize);
+        for(var i = 0; i< hexasphere.tiles.length; i++){
+            var t = hexasphere.tiles[i];
+            var latLon = t.getLatLon(hexasphere.radius);
 
-        objF.push(F);
-    }
+            var geometry = new THREE.Geometry();
 
-    for(var i =0; i< objV.length; i++){
-        downloadOutput += 'v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n';
-    }
+            for(var j = 0; j< t.boundary.length; j++){
+                var bp = t.boundary[j];
+                geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+            }
+            geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
 
-    downloadOutput += '\n# faces\n';
-    for(var i =0; i< objF.length; i++){
-        faceString = 'f';
-        for(var j = 0; j < objF[i].length; j++){
-            faceString = faceString + ' ' + objF[i][j];
-        }
-        downloadOutput += faceString + '\n';
-    }
-
-    var blob = new Blob([downloadOutput], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, 'test.obj')
-
-    for(var i = 0; i< hexasphere.tiles.length; i++){
-        var t = hexasphere.tiles[i];
-        var latLon = t.getLatLon(hexasphere.radius);
-
-        var geometry = new THREE.Geometry();
-
-        for(var j = 0; j< t.boundary.length; j++){
-            var bp = t.boundary[j];
-            geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
-        }
-        geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
-
-        if(isLand(latLon.lat, latLon.lon)){
 
             geometry.faces.push(new THREE.Face3(0,1,2));
             geometry.faces.push(new THREE.Face3(0,2,3));
             geometry.faces.push(new THREE.Face3(0,3,4));
             geometry.faces.push(new THREE.Face3(0,4,5));
 
-            var mesh = new THREE.Mesh(geometry, meshMaterials[Math.floor(Math.random() * meshMaterials.length)]);
+            if(isLand(latLon.lat, latLon.lon)){
+                material = meshMaterials[Math.floor(Math.random() * meshMaterials.length)]
+            } else {
+                material = oceanMaterial[Math.floor(Math.random() * oceanMaterial.length)]
+            }
+
+
+            var mesh = new THREE.Mesh(geometry, material);
             mesh.doubleSided = true;
             scene.add(mesh);
-         } else {
-             scene.add(new THREE.Line(geometry, lineMaterial));
-         
-         }
 
-    }
+        }
+
+        window.hexasphere = hexasphere;
+    };
+
+    createScene(30, 25, .95);
+
 
     var startTime = Date.now();
     var lastTime = Date.now();
-    var cameraAngle = 0;
+    var cameraAngle = -Math.PI/1.5;
 
     var tick = function(){
 
@@ -152,10 +132,44 @@ $(window).load(function(){
 
     }
 
+    function clamp(val, min, max){
+        return Math.min(Math.max(min, val), max);
+    }
+
+    $('.generateButton').click(function(){
+
+        var radius = $('#radius').val();
+        var subdivisions = $('#subdivisions').val();
+        var tileSize = $('#tileSize').val();
+
+        if ($.isNumeric(radius) && $.isNumeric(subdivisions) && $.isNumeric(tileSize)){
+            $('#generateError').hide();
+            radius = parseInt(clamp(radius, .1, 10000));
+            subdivisions = parseInt(clamp(subdivisions, 1, 100));
+            tileSize = parseFloat(clamp(tileSize, 0.0001, 1))
+
+            $('#radius').val(radius);
+            $('#subdivisions').val(subdivisions);
+            $('#tileSize').val(tileSize);
+
+            createScene(radius, subdivisions, tileSize);
+
+            if($(this).prop('id') === 'generate'){
+                var blob = new Blob([hexasphere.toObj()], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, 'hexasphere.obj')
+            }
+        } else {
+            $('#generateError').show();
+        }
+
+
+    });
+
     window.addEventListener( 'resize', onWindowResize, false );
 
     $("#container").append(renderer.domElement);
     requestAnimationFrame(tick);
-    window.hexasphere = hexasphere;
+    window.scene = scene;
+    window.createScene = createScene;
 
 });

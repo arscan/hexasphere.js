@@ -63,11 +63,12 @@ Face.prototype.getCentroid = function(clear){
     if(this.centroid && !clear){
         return this.centroid;
     }
-    var centroid = new Point();
 
-    centroid.x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
-    centroid.y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
-    centroid.z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+    var x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
+    var y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
+    var z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+
+    var centroid = new Point(x,y,z);
 
     this.centroid = centroid;
 
@@ -183,15 +184,54 @@ var Hexasphere = function(radius, numDivisions, hexSize){
 
 };
 
+Hexasphere.prototype.toObj = function() {
+
+    var objV = [];
+    var objF = [];
+    var objText = "# vertices \n";
+    var vertexIndexMap = {};
+
+    for(var i = 0; i< this.tiles.length; i++){
+        var t = this.tiles[i];
+        
+        var F = []
+        for(var j = 0; j< t.boundary.length; j++){
+            var index = vertexIndexMap[t.boundary[j]];
+            if(index == undefined){
+                objV.push(t.boundary[j]);
+                index = objV.length;
+                vertexIndexMap[t.boundary[j]] = index;
+            }
+            F.unshift(index)
+        }
+
+        objF.push(F);
+    }
+
+    for(var i =0; i< objV.length; i++){
+        objText += 'v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n';
+    }
+
+    objText += '\n# faces\n';
+    for(var i =0; i< objF.length; i++){
+        faceString = 'f';
+        for(var j = 0; j < objF[i].length; j++){
+            faceString = faceString + ' ' + objF[i][j];
+        }
+        objText += faceString + '\n';
+    }
+
+    return objText;
+}
+
 module.exports = Hexasphere;
 
 },{"./face":2,"./point":4,"./tile":5}],4:[function(require,module,exports){
 var Point = function(x,y,z){
     if(x !== undefined && y !== undefined && z !== undefined){
-        this.x = x;
-        this.y = y;
-        this.z = z;
-
+        this.x = x.toFixed(3);
+        this.y = y.toFixed(3);
+        this.z = z.toFixed(3);
     }
 
     this.faces = [];
@@ -217,12 +257,13 @@ Point.prototype.subdivide = function(point, count, checkPoint){
 }
 
 Point.prototype.segment = function(point, percent){
-    var newPoint = new Point();
     percent = Math.max(0.01, Math.min(1, percent));
 
-    newPoint.x = point.x * (1-percent) + this.x * percent;
-    newPoint.y = point.y * (1-percent) + this.y * percent;
-    newPoint.z = point.z * (1-percent) + this.z * percent;
+    var x = point.x * (1-percent) + this.x * percent;
+    var y = point.y * (1-percent) + this.y * percent;
+    var z = point.z * (1-percent) + this.z * percent;
+
+    var newPoint = new Point(x,y,z);
     return newPoint;
 
 };
@@ -363,4 +404,4 @@ Tile.prototype.toString = function(){
 
 module.exports = Tile;
 
-},{"./point":4}]},{},[1]);
+},{"./point":4}]},{},[1])

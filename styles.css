@@ -50,7 +50,7 @@ img {
     width: 325px;
     font-color: #999;
     background-color: rgba(0,0,0,.8);
-    padding-left: 15px;
+    padding: 0 15px;
 }
 
 #ident {
@@ -65,6 +65,33 @@ img {
 #ident a{
     color: #00eeee;
 
+}
+
+input {
+    width: 40px;
+}
+
+.generateLabel {
+    display: inline-block;
+    width: 150px;
+    padding-left: 30px;
+    font-size: .9em;
+}
+
+#preview {
+    margin: 10px 10px 10px 30px;
+}
+
+button {
+    margin: 10px 0px;;
+}
+
+
+#generateError {
+    padding: 0 0 10px 30px;
+    font-size: .8em;
+    color: #b96b52;
+    line-height: 1.3em;
 }
 
 @media (max-height: 420px) {

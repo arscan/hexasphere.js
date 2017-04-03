@@ -110,8 +110,7 @@ Point.prototype.findCommonFace = function(other, notThisFace){
 
 
 Point.prototype.toString = function(){
-    return "" + Math.round(this.x*100)/100 + "," + Math.round(this.y*100)/100 + "," + Math.round(this.z*100)/100;
-
+    return '' + this.x + ',' + this.y + ',' + this.z;
 }
 
 module.exports = Point;

@@ -68,22 +68,36 @@ img {
 }
 
 input {
-    width: 40px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+
+input[type="text"] {
+  width: 40px;
+  padding: 5px;
+  margin: 5px;
 }
 
 .generateLabel {
     display: inline-block;
-    width: 150px;
+    width: 190px;
     padding-left: 30px;
     font-size: .9em;
 }
 
+.generateForm {
+    padding-top: 10px;
+    border-top: 1px solid #333;
+}
+
+
 #preview {
-    margin: 10px 10px 10px 30px;
+    margin: 10px 10px 10px 70px;
 }
 
 button {
-    margin: 10px 0px;;
+    margin: 10px 0px;
+    padding: 7px 10px;
 }
 
 

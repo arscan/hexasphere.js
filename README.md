@@ -23,6 +23,9 @@ for(var i = 0; i< hexasphere.tiles.length; i++){
 	// hexasphere.tiles[i].centerPoint contains x,y,z of the tile
 	// hexasphere.tiles[i].boundary contains an ordered array of the boundary points
 }
+
+var waveformObjString = hexasphere.toObj() // ...or export it as a waveform .obj for use in 3d modelling software
+
 ```
 
 Check out a [demo on my website](https://www.robscanlon.com/hexasphere/).  The demo uses three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.

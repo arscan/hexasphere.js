@@ -121,7 +121,7 @@ Hexasphere.prototype.toObj = function() {
                 index = objV.length;
                 vertexIndexMap[t.boundary[j]] = index;
             }
-            F.unshift(index)
+            F.push(index)
         }
 
         objF.push(F);

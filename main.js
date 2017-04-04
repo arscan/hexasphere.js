@@ -33,8 +33,6 @@ $(window).load(function(){
 
         var x = parseInt(img.width * (lon + 180) / 360);
         var y = parseInt(img.height * (lat+90) / 180);
-        
-
 
         if(pixelData == null){
             pixelData = projectionContext.getImageData(0,0,img.width, img.height);
@@ -44,19 +42,19 @@ $(window).load(function(){
 
 
     var meshMaterials = [];
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x7cfc00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x397d02}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x77ee00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x61b329}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x83f52c}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x83f52c}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x4cbb17}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00ee00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({side: THREE.DoubleSide, color: 0x00aa11}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x7cfc00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x397d02}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x77ee00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x61b329}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x4cbb17}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00ee00}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00aa11}));
 
     var oceanMaterial = []
-    oceanMaterial.push(new THREE.MeshBasicMaterial({opacity: .5, side: THREE.DoubleSide, color: 0x0f2342}));
-    oceanMaterial.push(new THREE.MeshBasicMaterial({opacity: .5, side: THREE.DoubleSide, color: 0x0f1e38}));
+    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f2342}));
+    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f1e38}));
 
     var createScene = function(radius, divisions, tileSize){
         while(scene.children.length > 0){ 
@@ -75,7 +73,6 @@ $(window).load(function(){
             }
             geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
 
-
             geometry.faces.push(new THREE.Face3(0,1,2));
             geometry.faces.push(new THREE.Face3(0,2,3));
             geometry.faces.push(new THREE.Face3(0,3,4));
@@ -89,7 +86,6 @@ $(window).load(function(){
 
 
             var mesh = new THREE.Mesh(geometry, material);
-            mesh.doubleSided = true;
             scene.add(mesh);
 
         }

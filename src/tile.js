@@ -66,15 +66,16 @@ var Tile = function(centerPoint, hexSize){
         this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
     }
 
-    var normal = calculateSurfaceNormal(this.centerPoint, this.boundary[0], this.boundary[1]);
+
+    // Some of the faces are pointing in the wrong direction
+    // Fix this.  Should be a better way of handling it
+    // than flipping them around afterwards
+
+    var normal = calculateSurfaceNormal(this.boundary[1], this.boundary[2], this.boundary[3]);
 
     if(!pointingAwayFromOrigin(this.centerPoint, normal)){
         this.boundary.reverse();
     }
-
-    // console.log(normalizeVector(this.centerPoint));
-    // console.log(normalizeVector(normal));
-    // console.log('-------');
 
 };
 

@@ -71,12 +71,12 @@ $(window).load(function(){
                 var bp = t.boundary[j];
                 geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
             }
-            geometry.vertices.push(new THREE.Vector3(t.boundary[0].x, t.boundary[0].y, t.boundary[0].z));
-
             geometry.faces.push(new THREE.Face3(0,1,2));
             geometry.faces.push(new THREE.Face3(0,2,3));
             geometry.faces.push(new THREE.Face3(0,3,4));
-            geometry.faces.push(new THREE.Face3(0,4,5));
+            if(geometry.vertices.length > 5){
+                geometry.faces.push(new THREE.Face3(0,4,5));
+            }
 
             if(isLand(latLon.lat, latLon.lon)){
                 material = meshMaterials[Math.floor(Math.random() * meshMaterials.length)]

@@ -59,11 +59,12 @@ Face.prototype.getCentroid = function(clear){
     if(this.centroid && !clear){
         return this.centroid;
     }
-    var centroid = new Point();
 
-    centroid.x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
-    centroid.y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
-    centroid.z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+    var x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
+    var y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
+    var z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+
+    var centroid = new Point(x,y,z);
 
     this.centroid = centroid;
 

@@ -63,11 +63,12 @@ Face.prototype.getCentroid = function(clear){
     if(this.centroid && !clear){
         return this.centroid;
     }
-    var centroid = new Point();
 
-    centroid.x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
-    centroid.y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
-    centroid.z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+    var x = (this.points[0].x + this.points[1].x + this.points[2].x)/3;
+    var y = (this.points[0].y + this.points[1].y + this.points[2].y)/3;
+    var z = (this.points[0].z + this.points[1].z + this.points[2].z)/3;
+
+    var centroid = new Point(x,y,z);
 
     this.centroid = centroid;
 
@@ -183,15 +184,54 @@ var Hexasphere = function(radius, numDivisions, hexSize){
 
 };
 
+Hexasphere.prototype.toObj = function() {
+
+    var objV = [];
+    var objF = [];
+    var objText = "# vertices \n";
+    var vertexIndexMap = {};
+
+    for(var i = 0; i< this.tiles.length; i++){
+        var t = this.tiles[i];
+        
+        var F = []
+        for(var j = 0; j< t.boundary.length; j++){
+            var index = vertexIndexMap[t.boundary[j]];
+            if(index == undefined){
+                objV.push(t.boundary[j]);
+                index = objV.length;
+                vertexIndexMap[t.boundary[j]] = index;
+            }
+            F.push(index)
+        }
+
+        objF.push(F);
+    }
+
+    for(var i =0; i< objV.length; i++){
+        objText += 'v ' + objV[i].x + ' ' + objV[i].y + ' ' + objV[i].z + '\n';
+    }
+
+    objText += '\n# faces\n';
+    for(var i =0; i< objF.length; i++){
+        faceString = 'f';
+        for(var j = 0; j < objF[i].length; j++){
+            faceString = faceString + ' ' + objF[i][j];
+        }
+        objText += faceString + '\n';
+    }
+
+    return objText;
+}
+
 module.exports = Hexasphere;
 
 },{"./face":2,"./point":4,"./tile":5}],4:[function(require,module,exports){
 var Point = function(x,y,z){
     if(x !== undefined && y !== undefined && z !== undefined){
-        this.x = x;
-        this.y = y;
-        this.z = z;
-
+        this.x = x.toFixed(3);
+        this.y = y.toFixed(3);
+        this.z = z.toFixed(3);
     }
 
     this.faces = [];
@@ -217,12 +257,13 @@ Point.prototype.subdivide = function(point, count, checkPoint){
 }
 
 Point.prototype.segment = function(point, percent){
-    var newPoint = new Point();
     percent = Math.max(0.01, Math.min(1, percent));
 
-    newPoint.x = point.x * (1-percent) + this.x * percent;
-    newPoint.y = point.y * (1-percent) + this.y * percent;
-    newPoint.z = point.z * (1-percent) + this.z * percent;
+    var x = point.x * (1-percent) + this.x * percent;
+    var y = point.y * (1-percent) + this.y * percent;
+    var z = point.z * (1-percent) + this.z * percent;
+
+    var newPoint = new Point(x,y,z);
     return newPoint;
 
 };
@@ -298,14 +339,60 @@ Point.prototype.findCommonFace = function(other, notThisFace){
 
 
 Point.prototype.toString = function(){
-    return "" + Math.round(this.x*100)/100 + "," + Math.round(this.y*100)/100 + "," + Math.round(this.z*100)/100;
-
+    return '' + this.x + ',' + this.y + ',' + this.z;
 }
 
 module.exports = Point;
 
 },{}],5:[function(require,module,exports){
 var Point = require('./point');
+
+function vector(p1, p2){
+    return {
+        x: p2.x - p1.x,
+        y: p2.y - p1.y,
+        z: p2.z - p1.z
+    }
+
+}
+
+// https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
+// Set Vector U to (Triangle.p2 minus Triangle.p1)
+// Set Vector V to (Triangle.p3 minus Triangle.p1)
+// Set Normal.x to (multiply U.y by V.z) minus (multiply U.z by V.y)
+// Set Normal.y to (multiply U.z by V.x) minus (multiply U.x by V.z)
+// Set Normal.z to (multiply U.x by V.y) minus (multiply U.y by V.x)
+function calculateSurfaceNormal(p1, p2, p3){
+
+    U = vector(p1, p2)
+    V = vector(p1, p3)
+    
+    N = {
+        x: U.y * V.z - U.z * V.y,
+        y: U.z * V.x - U.x * V.z,
+        z: U.x * V.y - U.y * V.x
+    };
+
+    return N;
+
+}
+
+function pointingAwayFromOrigin(p, v){
+    return ((p.x * v.x) >= 0) && ((p.y * v.y) >= 0) && ((p.z * v.z) >= 0)
+}
+
+function normalizeVector(v){
+    var m = Math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+
+    return {
+        x: (v.x/m),
+        y: (v.y/m),
+        z: (v.z/m)
+    };
+
+}
+
+
 
 var Tile = function(centerPoint, hexSize){
     
@@ -324,6 +411,17 @@ var Tile = function(centerPoint, hexSize){
 
     for(var f=0; f< this.faces.length; f++){
         this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
+    }
+
+
+    // Some of the faces are pointing in the wrong direction
+    // Fix this.  Should be a better way of handling it
+    // than flipping them around afterwards
+
+    var normal = calculateSurfaceNormal(this.boundary[1], this.boundary[2], this.boundary[3]);
+
+    if(!pointingAwayFromOrigin(this.centerPoint, normal)){
+        this.boundary.reverse();
     }
 
 };
@@ -363,4 +461,4 @@ Tile.prototype.toString = function(){
 
 module.exports = Tile;
 
-},{"./point":4}]},{},[1]);
+},{"./point":4}]},{},[1])

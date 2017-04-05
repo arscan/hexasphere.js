@@ -12,6 +12,7 @@
 
         <!-- required for the application -->
         <script src="include/three.min.js"></script>
+        <script src="include/FileSaver.min.js"></script>
         <script src="build/hexasphere.js"></script>
         <script src="main.js"></script>
 
@@ -29,11 +30,28 @@
             <p>
             Used to create the <a href="https://robscanlon.com/encom-globe/">Encom Globe</a>.
             Visit the <a href="https://github.com/arscan/hexasphere.js">Github Repo</a>
-            for usage information.
+            for programmatic usage information.
             </p>
+            <p>
+            You may also generate and download a wavefront (.obj) model below:
+            </p>
+            <div class="generateForm">
+                <div id="generateError" style="display:none">
+                    Error: values must be numeric.
+                </div>
+
+                <div><label class='generateLabel' for='radius'>Radius:</label><input id='radius' type='text' name='radius' value='30'/></div>
+                <div><label class='generateLabel' for='subdivisions'>Subdivisions:</label><input id='subdivisions' type='text' name='subdivisions' value='25'/></div>
+                <div><label class='generateLabel' for='tileSize'>TileSize:</label><input id='tileSize' type='text' name='tileSize' value='0.95'/></div>
+                <button class='generateButton' id='preview'>Preview</button>
+                <button class='generateButton' id='generate'>Download as .obj</button>
+
+            </div>
+
             
             
         </div>
+
         <div id="ident">
             Created by <a href="http://twitter.com/arscan">@arscan</a>
 

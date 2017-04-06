@@ -107,7 +107,13 @@ Point.prototype.findCommonFace = function(other, notThisFace){
     return null;
 }
 
-
+Point.prototype.toJson = function(){
+    return {
+        x: this.x,
+        y: this.y,
+        z: this.z
+    };
+}
 
 Point.prototype.toString = function(){
     return '' + this.x + ',' + this.y + ',' + this.z;

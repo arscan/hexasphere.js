@@ -17,7 +17,7 @@ img {
 }
 
 #container {
-    position:absolute;
+    position:fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -54,11 +54,11 @@ img {
 }
 
 #ident {
-    position: absolute;
+    position: fixed;
     z-index: 5;
     bottom: 10px;
     font-siz: 10pt;
-    left: 24px;
+    right: 24px;
 
 }
 
@@ -80,8 +80,7 @@ input[type="text"] {
 
 .generateLabel {
     display: inline-block;
-    width: 190px;
-    padding-left: 30px;
+    width: 255px;
     font-size: .9em;
 }
 
@@ -90,13 +89,9 @@ input[type="text"] {
     border-top: 1px solid #333;
 }
 
-
-#preview {
-    margin: 10px 10px 10px 70px;
-}
-
 button {
-    margin: 10px 0px;
+    border-radius: 5px;
+    margin: 15px 3px 20px;
     padding: 7px 10px;
 }
 
@@ -113,7 +108,19 @@ button {
         font-size: 10pt;
     }
     #container {
-        padding-left: 200px;
+        left: 200px;
+    }
+    #banner {
+        width: 300px;
+    }
+    #infobox {
+        width: 300px;
+    }
+    .generateLabel {
+        width: 230px;
+    }
+    button {
+        padding: 5px;
 
     }
 }

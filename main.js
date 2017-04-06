@@ -95,7 +95,6 @@ $(window).load(function(){
 
     createScene(30, 25, .95);
 
-
     var startTime = Date.now();
     var lastTime = Date.now();
     var cameraAngle = -Math.PI/1.5;
@@ -150,9 +149,12 @@ $(window).load(function(){
 
             createScene(radius, subdivisions, tileSize);
 
-            if($(this).prop('id') === 'generate'){
+            if($(this).prop('id') === 'generateObj'){
                 var blob = new Blob([hexasphere.toObj()], {type: "text/plain;charset=utf-8"});
                 saveAs(blob, 'hexasphere.obj')
+            } else if($(this).prop('id') === 'generateJson'){
+                var blob = new Blob([hexasphere.toJson()], {type: "application/json;charset=utf-8"});
+                saveAs(blob, 'hexasphere.json')
             }
         } else {
             $('#generateError').show();

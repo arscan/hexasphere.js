@@ -30,10 +30,12 @@
             <p>
             Used to create the <a href="https://robscanlon.com/encom-globe/">Encom Globe</a>.
             Visit the <a href="https://github.com/arscan/hexasphere.js">Github Repo</a>
-            for programmatic usage information.
+            for methodology and programmatic usage information.
             </p>
             <p>
-            You may also generate and download a wavefront (.obj) model below:
+            You may also generate and download a hexasphere as either a json file or a wavefront (.obj) model below.
+            Subdivisions determines the number of tiles in the hexasphere.  Tile size allows you to create 
+            faces that do not completely fill the space allotted.
             </p>
             <div class="generateForm">
                 <div id="generateError" style="display:none">
@@ -41,15 +43,14 @@
                 </div>
 
                 <div><label class='generateLabel' for='radius'>Radius:</label><input id='radius' type='text' name='radius' value='30'/></div>
-                <div><label class='generateLabel' for='subdivisions'>Subdivisions:</label><input id='subdivisions' type='text' name='subdivisions' value='25'/></div>
+                <div><label class='generateLabel' for='subdivisions'>Subdivisions:</label><input id='subdivisions' type='text' name='subdivisions' value='20'/></div>
                 <div><label class='generateLabel' for='tileSize'>TileSize:</label><input id='tileSize' type='text' name='tileSize' value='0.95'/></div>
                 <button class='generateButton' id='preview'>Preview</button>
-                <button class='generateButton' id='generate'>Download as .obj</button>
+                <button class='generateButton' id='generateJson'>Download .json</button>
+                <button class='generateButton' id='generateObj'>Download .obj</button>
 
             </div>
 
-            
-            
         </div>
 
         <div id="ident">

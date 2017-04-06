@@ -103,6 +103,14 @@ var Hexasphere = function(radius, numDivisions, hexSize){
 
 };
 
+Hexasphere.prototype.toJson = function() {
+
+    return JSON.stringify({
+        radius: this.radius,
+        tiles: this.tiles.map(function(tile){return tile.toJson()})
+    });
+}
+
 Hexasphere.prototype.toObj = function() {
 
     var objV = [];

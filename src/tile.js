@@ -45,8 +45,6 @@ function normalizeVector(v){
 
 }
 
-
-
 var Tile = function(centerPoint, hexSize){
     
     if(hexSize == undefined){
@@ -59,13 +57,9 @@ var Tile = function(centerPoint, hexSize){
     this.faces = centerPoint.getOrderedFaces();
     this.boundary = [];
 
-    this.triangles = [];
-
-
     for(var f=0; f< this.faces.length; f++){
         this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
     }
-
 
     // Some of the faces are pointing in the wrong direction
     // Fix this.  Should be a better way of handling it
@@ -107,6 +101,17 @@ Tile.prototype.scaledBoundary = function(scale){
 
     return ret;
 };
+
+Tile.prototype.toJson = function(){
+    // this.centerPoint = centerPoint;
+    // this.faces = centerPoint.getOrderedFaces();
+    // this.boundary = [];
+    return {
+        centerPoint: this.centerPoint.toJson(),
+        boundary: this.boundary.map(function(point){return point.toJson()})
+    };
+
+}
 
 Tile.prototype.toString = function(){
     return this.centerPoint.toString();

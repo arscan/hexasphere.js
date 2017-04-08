@@ -56,27 +56,23 @@ var Tile = function(centerPoint, hexSize){
     this.centerPoint = centerPoint;
     this.faces = centerPoint.getOrderedFaces();
     this.boundary = [];
-    this.neighbors = [];
+    this.neighborIds = []; // this holds the centerpoints, will resolve to references after
+    this.neighbors = []; // this is filled in after all the tiles have been created
 
+    var neighborHash = {};
     for(var f=0; f< this.faces.length; f++){
         // build boundary
         this.boundary.push(this.faces[f].getCentroid().segment(this.centerPoint, hexSize));
 
-
         // get neighboring tiles
-        var neighborHash = {};
         var otherPoints = this.faces[f].getOtherPoints(this.centerPoint);
         for(var o = 0; o < 2; o++){
             neighborHash[otherPoints[o]] = 1;
         }
 
-        this.neighbors.concat(Object.keys(neighborHash));
-
-        debugger;
-
     }
 
-    console.log(this.neighbors.length);
+    this.neighborIds = Object.keys(neighborHash);
 
     // Some of the faces are pointing in the wrong direction
     // Fix this.  Should be a better way of handling it

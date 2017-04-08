@@ -96,9 +96,19 @@ var Hexasphere = function(radius, numDivisions, hexSize){
     points = newPoints;
 
     this.tiles = [];
+    this.tileLookup = {};
 
+    // create tiles and store in a lookup for references
     for(var p in points){
-        this.tiles.push(new Tile(points[p], hexSize));
+        var newTile = new Tile(points[p], hexSize);
+        this.tiles.push(newTile);
+        this.tileLookup[newTile.toString()] = newTile;
+    }
+
+    // resolve neighbor references now that all have been created
+    for(var t in this.tiles){
+        var _this = this;
+        this.tiles[t].neighbors = this.tiles[t].neighborIds.map(function(item){return _this.tileLookup[item]});
     }
 
 };

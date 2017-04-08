@@ -93,7 +93,7 @@ $(window).load(function(){
         window.hexasphere = hexasphere;
     };
 
-    createScene(30, 25, .95);
+    createScene(30, 20, .95);
 
     var startTime = Date.now();
     var lastTime = Date.now();

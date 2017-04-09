@@ -25,7 +25,7 @@ for(var i = 0; i< hexasphere.tiles.length; i++){
    // hexasphere.tiles[i].neighbors contains a list of all the neighboring tiles
 }
 
-var waveformObjString = hexasphere.toObj() // export it as a waveform .obj for use in 3d modelling software
+var waveformObjString = hexasphere.toObj() // export as waveform .obj to use in 3d modelling software
 var jsonString = hexasphere.toJson() // export it as a json object
 
 ```

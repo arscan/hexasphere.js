@@ -42,21 +42,26 @@ $(window).load(function(){
 
 
     var meshMaterials = [];
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x7cfc00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x397d02}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x77ee00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x61b329}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x4cbb17}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00ee00}));
-    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00aa11}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x7cfc00, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x397d02, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x77ee00, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x61b329, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x83f52c, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x4cbb17, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00ee00, transparent: true}));
+    meshMaterials.push(new THREE.MeshBasicMaterial({color: 0x00aa11, transparent: true}));
 
     var oceanMaterial = []
-    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f2342}));
-    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f1e38}));
+    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f2342, transparent: true}));
+    oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f1e38, transparent: true}));
+
+    var introTick = 0;
+    var seenTiles = {};
+    var currentTiles = [];
 
     var createScene = function(radius, divisions, tileSize){
+        introTick = -1;
         while(scene.children.length > 0){ 
             scene.remove(scene.children[0]); 
         }
@@ -84,13 +89,23 @@ $(window).load(function(){
                 material = oceanMaterial[Math.floor(Math.random() * oceanMaterial.length)]
             }
 
-
-            var mesh = new THREE.Mesh(geometry, material);
+            material.opacity = 0.3;
+            var mesh = new THREE.Mesh(geometry, material.clone());
             scene.add(mesh);
+            hexasphere.tiles[i].mesh = mesh;
 
         }
 
+        seenTiles = {};
+        
+        currentTiles = hexasphere.tiles.splice(0,12);
+        currentTiles.forEach(function(item){
+            seenTiles[item.toString()] = 1;
+            item.mesh.material.opacity = 1;
+        });
+
         window.hexasphere = hexasphere;
+        introTick = 0;
     };
 
     createScene(30, 25, .95);
@@ -100,7 +115,6 @@ $(window).load(function(){
     var cameraAngle = -Math.PI/1.5;
 
     var tick = function(){
-
 
         var dt = Date.now() - lastTime;
 
@@ -115,6 +129,20 @@ $(window).load(function(){
         camera.lookAt( scene.position );
 
         renderer.render( scene, camera );
+
+        var nextTiles = [];
+
+        currentTiles.forEach(function(item){
+            item.neighbors.forEach(function(neighbor){
+                if(!seenTiles[neighbor.toString()]){
+                    neighbor.mesh.material.opacity = 1;
+                    nextTiles.push(neighbor);
+                    seenTiles[neighbor] = 1;
+                }
+            });
+        });
+
+        currentTiles = nextTiles;
 
         requestAnimationFrame(tick);
 

@@ -73,9 +73,14 @@ input {
 }
 
 input[type="text"] {
-  width: 40px;
-  padding: 5px;
-  margin: 5px;
+    width: 40px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.generateTitle {
+    font-size: 1.3em;
+    padding-bottom: 18px;
 }
 
 .generateLabel {

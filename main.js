@@ -98,7 +98,7 @@ $(window).load(function(){
 
         seenTiles = {};
         
-        currentTiles = hexasphere.tiles.splice(0,12);
+        currentTiles = hexasphere.tiles.slice().splice(0,12);
         currentTiles.forEach(function(item){
             seenTiles[item.toString()] = 1;
             item.mesh.material.opacity = 1;

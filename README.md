@@ -20,11 +20,13 @@ var tileWidth = 0.9;    // Add padding (1.0 = no padding; 0.1 = mostly padding)
 
 var hexasphere = new Hexasphere(radius, subDivisions, tileWidth);
 for(var i = 0; i< hexasphere.tiles.length; i++){
-	// hexasphere.tiles[i].centerPoint contains x,y,z of the tile
-	// hexasphere.tiles[i].boundary contains an ordered array of the boundary points
+   // hexasphere.tiles[i].centerPoint contains x,y,z of the tile
+   // hexasphere.tiles[i].boundary contains an ordered array of the boundary points
+   // hexasphere.tiles[i].neighbors contains a list of all the neighboring tiles
 }
 
-var waveformObjString = hexasphere.toObj() // ...or export it as a waveform .obj for use in 3d modelling software
+var waveformObjString = hexasphere.toObj() // export it as a waveform .obj for use in 3d modelling software
+var jsonString = hexasphere.toJson() // export it as a json object
 
 ```
 

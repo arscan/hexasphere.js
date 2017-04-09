@@ -57,6 +57,8 @@ $(window).load(function(){
     oceanMaterial.push(new THREE.MeshBasicMaterial({color: 0x0f1e38, transparent: true}));
 
     var introTick = 0;
+    var seenTiles = {};
+    var currentTiles = [];
 
     var createScene = function(radius, divisions, tileSize){
         introTick = -1;
@@ -87,25 +89,32 @@ $(window).load(function(){
                 material = oceanMaterial[Math.floor(Math.random() * oceanMaterial.length)]
             }
 
-            material.opacity = 0;
+            material.opacity = 0.3;
             var mesh = new THREE.Mesh(geometry, material.clone());
             scene.add(mesh);
             hexasphere.tiles[i].mesh = mesh;
 
         }
 
+        seenTiles = {};
+        
+        currentTiles = hexasphere.tiles.splice(0,12);
+        currentTiles.forEach(function(item){
+            seenTiles[item.toString()] = 1;
+            item.mesh.material.opacity = 1;
+        });
+
         window.hexasphere = hexasphere;
         introTick = 0;
     };
 
-    createScene(30, 15, .95);
+    createScene(30, 25, .95);
 
     var startTime = Date.now();
     var lastTime = Date.now();
     var cameraAngle = -Math.PI/1.5;
 
     var tick = function(){
-
 
         var dt = Date.now() - lastTime;
 
@@ -121,14 +130,19 @@ $(window).load(function(){
 
         renderer.render( scene, camera );
 
-        if(introTick >= 0){
-            for(var j = 0; j< 20; j++){
-                if(introTick * 20 + j < hexasphere.tiles.length){
-                    hexasphere.tiles[introTick * 20 + j].mesh.material.opacity = 1;
+        var nextTiles = [];
+
+        currentTiles.forEach(function(item){
+            item.neighbors.forEach(function(neighbor){
+                if(!seenTiles[neighbor.toString()]){
+                    neighbor.mesh.material.opacity = 1;
+                    nextTiles.push(neighbor);
+                    seenTiles[neighbor] = 1;
                 }
-            }
-            introTick++;
-        }
+            });
+        });
+
+        currentTiles = nextTiles;
 
         requestAnimationFrame(tick);
 

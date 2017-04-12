@@ -1,8 +1,10 @@
 Hexasphere.js
 =============
-Would you like a sphere that is covered completely in hexagons of equal size?  Turns out that's not possible, but a sphere that is covered by all hexagons except for 12 pentagons is pretty straightfoward to contruct.  Starting with a icosohedron, subdivide each face to the appropriate resolution, project onto a sphere, and create the hexagons by connecting midpoints of the resulting triangles.  The corner tiles of the original icosohedron are pentagons, but the rest of the sphere will be covered by hexagons.
+Do you need a sphere that is covered completely in hexagons of equal size?  That isn't possible, but a sphere covered by all hexagons except for twelve pentagons is pretty straightfoward to contruct.  Starting with a icosohedron, subdivide each face to the appropriate resolution, project onto a sphere, and create the hexagons by connecting midpoints of the resulting triangles.  The corner tiles of the original icosohedron are pentagons, but the rest of the sphere will be covered by hexagons.
 
-Its not perfect, but for many applications it is probably good enough.
+The technical term for this structure is a [geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron), with faces grouped into hexagons and pentagons.
+
+It is not perfect if you want only hexagons on a sphere, but for many applications it is probably good enough.
 
 This is a javascript implementation of the above method.  I use it to build the [Encom Globe](http://github.com/arscan/encom-globe), and it could be used for games or other "useful" applications. At the very least this might be useful as a reference implementation for people trying to something similar.
 
@@ -30,7 +32,8 @@ var jsonString = hexasphere.toJson() // export it as a json object
 
 ```
 
-Check out a [demo on my website](https://www.robscanlon.com/hexasphere/).  The demo uses three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.
+Check out a [demo on my website](https://www.robscanlon.com/hexasphere/).  The demo uses Three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.
+You can generate a waveform (.obj) model directly from the website, if you don't want to deal with the javascript library.
 
 License
 --------

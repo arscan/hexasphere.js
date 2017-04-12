@@ -1,9 +1,8 @@
 body {
     color: #fff;
     background-color: #000;
-    font: 14pt sans-serif;
-    line-height: 1.5em;
-    padding: 0;
+    font: 12pt sans-serif;
+    line-height: 1.5em; padding: 0;
     margin: 0;
 }
 
@@ -31,12 +30,6 @@ img {
 #banner {
     font: 20pt Georgia;
     font-weight: bold;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 5;
-    border-bottom: 1px solid #333;
-    width: 330px;
     padding-bottom: 5px;
     background-color: rgba(0,0,0,.9);
 
@@ -48,9 +41,9 @@ img {
     z-index: 3;
     left: 10px;
     width: 325px;
-    font-color: #999;
     background-color: rgba(0,0,0,.8);
-    padding: 0 15px;
+    padding: 0 20px;
+    text-align: justify
 }
 
 #ident {
@@ -91,7 +84,6 @@ input[type="text"] {
 
 .generateForm {
     padding-top: 10px;
-    border-top: 1px solid #333;
 }
 
 button {
@@ -114,9 +106,6 @@ button {
     }
     #container {
         left: 200px;
-    }
-    #banner {
-        width: 300px;
     }
     #infobox {
         width: 300px;

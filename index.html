@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <title>Hexasphere.js</title>
 
+        <meta name="Description" content="Javascript library to generate a sphere covered in hexagons." />
+        <meta name="Keywords" content="hexasphere, hexasphere.js, geodesic sphere, geodesic polyhedron, javascript, hexagons" />
         <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
 
         <!-- these are just for the demo page / options -->
@@ -18,12 +20,12 @@
 
     </head>
     <body>
-        <div id="banner">
-            Hexasphere.js
-        </div>
         <div id="infobox">
+            <div id="banner">Hexasphere.js</div>
             <p>
-            A small, configurable javascript library that generates (mostly) hexagon tiles on a sphere.
+            A small, configurable javascript library that covers a sphere with hexagonal tiles.
+            The technical term for this structure is a <a href="https://en.wikipedia.org/wiki/Geodesic_polyhedron">geodesic polyhedron</a>, 
+            with triangles grouped into hexagons (and a few of pentagons).
             This page uses WebGL and Three.js to display the hexasphere, but the library
             itself does not have any external dependencies.
             </p>

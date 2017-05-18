@@ -35,6 +35,13 @@ var jsonString = hexasphere.toJson() // export it as a json object
 Check out a [demo on my website](https://www.robscanlon.com/hexasphere/).  The demo uses Three.js to render the sphere, but that is not an inherit dependency of hexasphere.js.
 You can generate a waveform (.obj) model directly from the website, if you don't want to deal with the javascript library.
 
+Implementations in Other Languages
+--------
+
+If you port this to other languages, let me know and I'll link to it here:
+
+- Objective-C: [pkclsoft/HexasphereDemo](https://github.com/pkclsoft/HexasphereDemo)
+
 License
 --------
 

@@ -41,6 +41,7 @@ Implementations in Other Languages
 If you port this to other languages, let me know and I'll link to it here:
 
 - Objective-C: [pkclsoft/HexasphereDemo](https://github.com/pkclsoft/HexasphereDemo)
+- Unity C#: [Em3rgencyLT/Hexasphere](https://github.com/Em3rgencyLT/Hexasphere)
 
 License
 --------

@@ -99,6 +99,8 @@ $(window).load(function(){
                 }
                 geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3,false));
                 geometry.setIndex(indices);
+
+                geometry.computeVertexNormals();
             }
             let material;
             if(isLand(latLon.lat, latLon.lon)){

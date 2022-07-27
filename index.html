@@ -12,11 +12,18 @@
 
         <link href="styles.css" rel="stylesheet" type="text/css" />
 
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://threejs.org/build/three.module.js"
+				}
+			}
+		</script>
         <!-- required for the application -->
-        <script src="include/three.min.js"></script>
+        <!--script src="include/three.min.js"></script-->
         <script src="include/FileSaver.min.js"></script>
         <script src="build/hexasphere.js"></script>
-        <script src="main.js"></script>
+        <script type="module" src="main.js"></script>
 
     </head>
     <body>

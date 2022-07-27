@@ -1,3 +1,5 @@
+import * as THREE from "three"
+
 $(window).load(function(){
 
     var width = $(window).innerWidth();
@@ -70,19 +72,35 @@ $(window).load(function(){
             var t = hexasphere.tiles[i];
             var latLon = t.getLatLon(hexasphere.radius);
 
-            var geometry = new THREE.Geometry();
-
-            for(var j = 0; j< t.boundary.length; j++){
-                var bp = t.boundary[j];
-                geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+            var geometry;
+            if(THREE.Geometry){
+                geometry = new THREE.Geometry();
+                for(var j = 0; j< t.boundary.length; j++){
+                    var bp = t.boundary[j];
+                    geometry.vertices.push(new THREE.Vector3(bp.x, bp.y, bp.z));
+                }
+                geometry.faces.push(new THREE.Face3(0,1,2));
+                geometry.faces.push(new THREE.Face3(0,2,3));
+                geometry.faces.push(new THREE.Face3(0,3,4));
+                if(geometry.vertices.length > 5){
+                    geometry.faces.push(new THREE.Face3(0,4,5));
+                }
+            }else{
+                let vertices=[]
+                let indices=[]
+                geometry = new THREE.BufferGeometry();
+                for(var j = 0; j< t.boundary.length; j++){
+                    var bp = t.boundary[j];
+                    vertices.push(parseFloat(bp.x), parseFloat(bp.y), parseFloat(bp.z));
+                }
+                indices.push(0,1,2,0,2,3,0,3,4);
+                if(vertices.length > 15){
+                    indices.push(0,4,5);
+                }
+                geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3,false));
+                geometry.setIndex(indices);
             }
-            geometry.faces.push(new THREE.Face3(0,1,2));
-            geometry.faces.push(new THREE.Face3(0,2,3));
-            geometry.faces.push(new THREE.Face3(0,3,4));
-            if(geometry.vertices.length > 5){
-                geometry.faces.push(new THREE.Face3(0,4,5));
-            }
-
+            let material;
             if(isLand(latLon.lat, latLon.lon)){
                 material = meshMaterials[Math.floor(Math.random() * meshMaterials.length)]
             } else {
